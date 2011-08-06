@@ -1,28 +1,43 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class CursoService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.CursoDAO;
+import facilius.model.pojo.Curso;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class CursoService implements BaseService<Curso> {
+
+	@Override
+	public void create(Curso e) throws Exception {
+		CursoDAO dao = new CursoDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		CursoDAO dao = new CursoDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<Curso> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		CursoDAO dao = new CursoDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Curso readById(Long id) throws Exception {
+		CursoDAO dao = new CursoDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Curso e) throws Exception {
+		CursoDAO dao = new CursoDAO();
+		dao.update(e);
 	}
+
 }

@@ -18,58 +18,58 @@ import facilius.model.service.ValorNotaService;
 public class ServiceLocator {
 
 	public static AulaService getAulaService() {
-		throw new UnsupportedOperationException();
+		return new AulaService();
 	}
 
 	public static CidadeService getCidadeService() {
-		throw new UnsupportedOperationException();
+		return new CidadeService();
 	}
 
 	public static CursoService getCursoService() {
-		throw new UnsupportedOperationException();
+		return new CursoService();
 	}
 
 	public static DisciplinaService getDisciplinaService() {
-		throw new UnsupportedOperationException();
+		return new DisciplinaService();
 	}
 
 	public static FrequenciaService getFrequenciaService() {
-		throw new UnsupportedOperationException();
+		return new FrequenciaService();
 	}
 
 	public static InstituicaoService getInstituicaoService() {
-		throw new UnsupportedOperationException();
+		return new InstituicaoService();
 	}
 
 	public static MaterialService getMaterialService() {
-		throw new UnsupportedOperationException();
+		return new MaterialService();
 	}
 
 	public static TipoNotaService getTipoNotaService() {
-            return new TipoNotaService();
+		return new TipoNotaService();
 	}
 
 	public static TurmaService getTurmaService() {
-		throw new UnsupportedOperationException();
+		return new TurmaService();
 	}
 
 	public static TurmaTipoNotaService getTurmaTipoNotaService() {
-		throw new UnsupportedOperationException();
+		return new TurmaTipoNotaService();
 	}
 
 	public static UsuarioCursoService getUsuarioCursoService() {
-		throw new UnsupportedOperationException();
+		return new UsuarioCursoService();
 	}
 
 	public static UsuarioCursoTurmaService getUsuarioCursoTurmaService() {
-		throw new UnsupportedOperationException();
+		return new UsuarioCursoTurmaService();
 	}
 
 	public static UsuarioService getUsuarioService() {
-		throw new UnsupportedOperationException();
+		return new UsuarioService();
 	}
 
 	public static ValorNotaService getValorNotaservice() {
-		throw new UnsupportedOperationException();
+		return new ValorNotaService();
 	}
 }

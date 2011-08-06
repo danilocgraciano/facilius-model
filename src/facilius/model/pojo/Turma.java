@@ -3,17 +3,17 @@ package facilius.model.pojo;
 import java.util.ArrayList;
 
 public class Turma {
-	private long id;
+	private Long id;
 	private String descricao;
 	private int ano;
-	ArrayList<UsuarioCursoTurma> usuarioTurma = new ArrayList<UsuarioCursoTurma>();
-	ArrayList<TurmaTipoNota> turmaTipoNota = new ArrayList<TurmaTipoNota>();
+	private ArrayList<UsuarioCursoTurma> usuarioTurma;
+	private ArrayList<TurmaTipoNota> turmaTipoNota;
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -31,5 +31,21 @@ public class Turma {
 
 	public int getAno() {
 		return this.ano;
+	}
+
+	public ArrayList<UsuarioCursoTurma> getUsuarioTurma() {
+		return usuarioTurma;
+	}
+
+	public void setUsuarioTurma(ArrayList<UsuarioCursoTurma> usuarioTurma) {
+		this.usuarioTurma = usuarioTurma;
+	}
+
+	public ArrayList<TurmaTipoNota> getTurmaTipoNota() {
+		return turmaTipoNota;
+	}
+
+	public void setTurmaTipoNota(ArrayList<TurmaTipoNota> turmaTipoNota) {
+		this.turmaTipoNota = turmaTipoNota;
 	}
 }

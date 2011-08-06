@@ -3,28 +3,11 @@ package facilius.model.pojo;
 import java.util.ArrayList;
 
 public class UsuarioCursoTurma {
+	private Long id;
 	private UsuarioCurso usuarioCurso;
 	private Turma turma;
-	ArrayList<ValorNota> notas = new ArrayList<ValorNota>();
-	ArrayList<Frequencia> turmaFrequencia = new ArrayList<Frequencia>();
-	UsuarioCurso usuarios;
-	Turma turmas;
-
-	public void setUsuarios(UsuarioCurso usuarios) {
-		this.usuarios = usuarios;
-	}
-
-	public UsuarioCurso getUsuarios() {
-		return this.usuarios;
-	}
-
-	public void setTurmas(Turma turmas) {
-		this.turmas = turmas;
-	}
-
-	public Turma getTurmas() {
-		return this.turmas;
-	}
+	private ArrayList<ValorNota> notas;
+	private ArrayList<Frequencia> turmaFrequencia;
 
 	public void setUsuarioCurso(UsuarioCurso usuarioCurso) {
 		this.usuarioCurso = usuarioCurso;
@@ -40,5 +23,29 @@ public class UsuarioCursoTurma {
 
 	public Turma getTurma() {
 		return this.turma;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public ArrayList<ValorNota> getNotas() {
+		return notas;
+	}
+
+	public void setNotas(ArrayList<ValorNota> notas) {
+		this.notas = notas;
+	}
+
+	public ArrayList<Frequencia> getTurmaFrequencia() {
+		return turmaFrequencia;
+	}
+
+	public void setTurmaFrequencia(ArrayList<Frequencia> turmaFrequencia) {
+		this.turmaFrequencia = turmaFrequencia;
 	}
 }

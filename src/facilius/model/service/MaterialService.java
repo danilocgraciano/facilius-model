@@ -1,28 +1,43 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class MaterialService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.MaterialDAO;
+import facilius.model.pojo.Material;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class MaterialService implements BaseService<Material> {
+
+	@Override
+	public void create(Material e) throws Exception {
+		MaterialDAO dao = new MaterialDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		MaterialDAO dao = new MaterialDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<Material> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		MaterialDAO dao = new MaterialDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Material readById(Long id) throws Exception {
+		MaterialDAO dao = new MaterialDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Material e) throws Exception {
+		MaterialDAO dao = new MaterialDAO();
+		dao.update(e);
 	}
+
 }

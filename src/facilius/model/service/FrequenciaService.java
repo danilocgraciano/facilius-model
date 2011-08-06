@@ -1,28 +1,43 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class FrequenciaService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.FrequenciaDAO;
+import facilius.model.pojo.Frequencia;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class FrequenciaService implements BaseService<Frequencia> {
+
+	@Override
+	public void create(Frequencia e) throws Exception {
+		FrequenciaDAO dao = new FrequenciaDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		FrequenciaDAO dao = new FrequenciaDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<Frequencia> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		FrequenciaDAO dao = new FrequenciaDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Frequencia readById(Long id) throws Exception {
+		FrequenciaDAO dao = new FrequenciaDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Frequencia e) throws Exception {
+		FrequenciaDAO dao = new FrequenciaDAO();
+		dao.update(e);
 	}
+
 }

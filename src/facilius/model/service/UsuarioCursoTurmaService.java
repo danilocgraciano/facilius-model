@@ -1,28 +1,43 @@
 package facilius.model.service;
 
 import facilius.model.base.BaseService;
+import facilius.model.dao.UsuarioCursoTurmaDAO;
+import facilius.model.pojo.UsuarioCursoTurma;
+
 import java.util.List;
 import java.util.Map;
 
-public class UsuarioCursoTurmaService implements BaseService {
+public class UsuarioCursoTurmaService implements BaseService<UsuarioCursoTurma> {
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void create(UsuarioCursoTurma e) throws Exception {
+		UsuarioCursoTurmaDAO dao = new UsuarioCursoTurmaDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		UsuarioCursoTurmaDAO dao = new UsuarioCursoTurmaDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<UsuarioCursoTurma> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		UsuarioCursoTurmaDAO dao = new UsuarioCursoTurmaDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public UsuarioCursoTurma readById(Long id) throws Exception {
+		UsuarioCursoTurmaDAO dao = new UsuarioCursoTurmaDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(UsuarioCursoTurma e) throws Exception {
+		UsuarioCursoTurmaDAO dao = new UsuarioCursoTurmaDAO();
+		dao.update(e);
 	}
+
 }
