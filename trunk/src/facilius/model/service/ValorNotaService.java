@@ -1,28 +1,45 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class ValorNotaService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.ValorNotaDAO;
+import facilius.model.pojo.ValorNota;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class ValorNotaService implements BaseService<ValorNota> {
+
+	@Override
+	public void create(ValorNota e) throws Exception {
+		ValorNotaDAO dao = new ValorNotaDAO();
+		dao.create(e);
+
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		ValorNotaDAO dao = new ValorNotaDAO();
+		dao.delete(id);
+
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<ValorNota> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		ValorNotaDAO dao = new ValorNotaDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public ValorNota readById(Long id) throws Exception {
+		ValorNotaDAO dao = new ValorNotaDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(ValorNota e) throws Exception {
+		ValorNotaDAO dao = new ValorNotaDAO();
+		dao.update(e);
 	}
+
 }

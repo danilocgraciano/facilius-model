@@ -1,30 +1,11 @@
 package facilius.model.pojo;
 
-import java.util.ArrayList;
 
 public class UsuarioCurso {
+	private Long id;
 	private Long matricula;
 	private Curso curso;
 	private Usuario usuario;
-	ArrayList<UsuarioCursoTurma> usuarioTurma = new ArrayList<UsuarioCursoTurma>();
-	Usuario usuarios;
-	Curso cursos;
-
-	public void setUsuarios(Usuario usuarios) {
-		this.usuarios = usuarios;
-	}
-
-	public Usuario getUsuarios() {
-		return this.usuarios;
-	}
-
-	public void setCursos(Curso cursos) {
-		this.cursos = cursos;
-	}
-
-	public Curso getCursos() {
-		return this.cursos;
-	}
 
 	public void setMatricula(Long matricula) {
 		this.matricula = matricula;
@@ -48,5 +29,13 @@ public class UsuarioCurso {
 
 	public Usuario getUsuario() {
 		return this.usuario;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

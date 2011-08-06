@@ -1,28 +1,44 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class TurmaService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.TurmaDAO;
+import facilius.model.pojo.Turma;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class TurmaService implements BaseService<Turma> {
+
+	@Override
+	public void create(Turma e) throws Exception {
+		TurmaDAO dao = new TurmaDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		TurmaDAO dao = new TurmaDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<Turma> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		TurmaDAO dao = new TurmaDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Turma readById(Long id) throws Exception {
+		TurmaDAO dao = new TurmaDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Turma e) throws Exception {
+		TurmaDAO dao = new TurmaDAO();
+		dao.update(e);
+
 	}
+
 }

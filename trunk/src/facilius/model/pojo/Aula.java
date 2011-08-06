@@ -7,8 +7,8 @@ public class Aula {
 	private String titulo;
 	private String descricao;
 	private String data;
-	ArrayList<Frequencia> turmaFrequencia = new ArrayList<Frequencia>();
-	ArrayList<Material> materiais = new ArrayList<Material>();
+	private ArrayList<Frequencia> turmaFrequencia;
+	private ArrayList<Material> materiais;
 
 	public void setTitulo(String titulo) {
 		this.titulo = titulo;
@@ -32,5 +32,29 @@ public class Aula {
 
 	public String getData() {
 		return this.data;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public ArrayList<Frequencia> getTurmaFrequencia() {
+		return turmaFrequencia;
+	}
+
+	public void setTurmaFrequencia(ArrayList<Frequencia> turmaFrequencia) {
+		this.turmaFrequencia = turmaFrequencia;
+	}
+
+	public ArrayList<Material> getMateriais() {
+		return materiais;
+	}
+
+	public void setMateriais(ArrayList<Material> materiais) {
+		this.materiais = materiais;
 	}
 }

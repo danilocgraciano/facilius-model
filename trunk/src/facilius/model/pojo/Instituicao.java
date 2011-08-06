@@ -9,7 +9,7 @@ public class Instituicao {
 	private String telefone1;
 	private String telefone2;
 	private byte logo;
-	Cidade cidade;
+	private Cidade cidade;
 
 	public void setNome(String nome) {
 		this.nome = nome;
@@ -65,5 +65,21 @@ public class Instituicao {
 
 	public byte getLogo() {
 		return this.logo;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Cidade getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(Cidade cidade) {
+		this.cidade = cidade;
 	}
 }

@@ -29,4 +29,12 @@ public class Material {
 	public byte getArquivo() {
 		return this.arquivo;
 	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 }

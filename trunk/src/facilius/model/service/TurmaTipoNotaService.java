@@ -1,28 +1,43 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class TurmaTipoNotaService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.TurmaTipoNotaDAO;
+import facilius.model.pojo.TurmaTipoNota;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class TurmaTipoNotaService implements BaseService<TurmaTipoNota> {
+
+	@Override
+	public void create(TurmaTipoNota e) throws Exception {
+		TurmaTipoNotaDAO dao = new TurmaTipoNotaDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		TurmaTipoNotaDAO dao = new TurmaTipoNotaDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<TurmaTipoNota> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		TurmaTipoNotaDAO dao = new TurmaTipoNotaDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public TurmaTipoNota readById(Long id) throws Exception {
+		TurmaTipoNotaDAO dao = new TurmaTipoNotaDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(TurmaTipoNota e) throws Exception {
+		TurmaTipoNotaDAO dao = new TurmaTipoNotaDAO();
+		dao.update(e);
 	}
+
 }

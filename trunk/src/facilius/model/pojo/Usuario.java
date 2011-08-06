@@ -1,7 +1,5 @@
 package facilius.model.pojo;
 
-import java.util.ArrayList;
-
 public class Usuario {
 	private Long id;
 	private String login;
@@ -10,7 +8,6 @@ public class Usuario {
 	private String senha;
 	private String email;
 	private int tipo;
-	ArrayList<UsuarioCurso> usuarioCurso = new ArrayList<UsuarioCurso>();
 
 	public void setLogin(String login) {
 		this.login = login;
@@ -58,5 +55,13 @@ public class Usuario {
 
 	public int getTipo() {
 		return this.tipo;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }

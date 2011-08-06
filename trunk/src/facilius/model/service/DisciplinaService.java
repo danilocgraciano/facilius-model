@@ -1,28 +1,43 @@
 package facilius.model.service;
 
-import facilius.model.base.BaseService;
 import java.util.List;
 import java.util.Map;
 
-public class DisciplinaService implements BaseService {
+import facilius.model.base.BaseService;
+import facilius.model.dao.DisciplinaDAO;
+import facilius.model.pojo.Disciplina;
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+public class DisciplinaService implements BaseService<Disciplina> {
+
+	@Override
+	public void create(Disciplina e) throws Exception {
+		DisciplinaDAO dao = new DisciplinaDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		DisciplinaDAO dao = new DisciplinaDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<Disciplina> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		DisciplinaDAO dao = new DisciplinaDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Disciplina readById(Long id) throws Exception {
+		DisciplinaDAO dao = new DisciplinaDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Disciplina e) throws Exception {
+		DisciplinaDAO dao = new DisciplinaDAO();
+		dao.update(e);
 	}
+
 }

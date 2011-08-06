@@ -1,28 +1,43 @@
 package facilius.model.service;
 
 import facilius.model.base.BaseService;
+import facilius.model.dao.CidadeDAO;
+import facilius.model.pojo.Cidade;
+
 import java.util.List;
 import java.util.Map;
 
-public class CidadeService implements BaseService {
+public class CidadeService implements BaseService<Cidade> {
 
-	public void create(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void create(Cidade e) throws Exception {
+		CidadeDAO dao = new CidadeDAO();
+		dao.create(e);
 	}
 
-	public List readByCriteria(Map criteria) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void delete(Long id) throws Exception {
+		CidadeDAO dao = new CidadeDAO();
+		dao.delete(id);
 	}
 
-	public Object readById(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public List<Cidade> readByCriteria(Map<String, Object> criteria)
+			throws Exception {
+		CidadeDAO dao = new CidadeDAO();
+		return dao.readByCriteria(criteria);
 	}
 
-	public void update(Object obj) {
-		throw new UnsupportedOperationException();
+	@Override
+	public Cidade readById(Long id) throws Exception {
+		CidadeDAO dao = new CidadeDAO();
+		return dao.readById(id);
 	}
 
-	public void delete(Long id) {
-		throw new UnsupportedOperationException();
+	@Override
+	public void update(Cidade e) throws Exception {
+		CidadeDAO dao = new CidadeDAO();
+		dao.update(e);
 	}
+
 }

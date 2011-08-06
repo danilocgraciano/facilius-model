@@ -1,26 +1,9 @@
 package facilius.model.pojo;
 
 public class TurmaTipoNota {
+	private Long id;
 	private Turma turma;
 	private TipoNota tipoNota;
-	Turma turmas;
-	TipoNota notas;
-
-	public void setTurmas(Turma turmas) {
-		this.turmas = turmas;
-	}
-
-	public Turma getTurmas() {
-		return this.turmas;
-	}
-
-	public void setNotas(TipoNota notas) {
-		this.notas = notas;
-	}
-
-	public TipoNota getNotas() {
-		return this.notas;
-	}
 
 	public void setTurma(Turma turma) {
 		this.turma = turma;
@@ -36,5 +19,13 @@ public class TurmaTipoNota {
 
 	public TipoNota getTipoNota() {
 		return this.tipoNota;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }
