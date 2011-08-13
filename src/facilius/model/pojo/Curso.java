@@ -39,4 +39,11 @@ public class Curso {
 	public void setDisciplinas(ArrayList<Disciplina> disciplinas) {
 		this.disciplinas = disciplinas;
 	}
+
+    @Override
+    public String toString() {
+        return this.getDescricao();
+    }
+
+
 }

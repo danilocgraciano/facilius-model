@@ -4,6 +4,7 @@ public class Disciplina {
 	private Long id;
 	private String nome;
 	private String descricao;
+        private Curso curso;
 
 	public void setNome(String nome) {
 		this.nome = nome;
@@ -28,4 +29,12 @@ public class Disciplina {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+    public Curso getCurso() {
+        return curso;
+    }
+
+    public void setCurso(Curso curso) {
+        this.curso = curso;
+    }
 }
