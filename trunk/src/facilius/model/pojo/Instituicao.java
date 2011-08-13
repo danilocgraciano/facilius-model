@@ -10,6 +10,7 @@ public class Instituicao {
 	private String telefone2;
 	private byte logo;
 	private Cidade cidade;
+        private String email;
 
 	public void setNome(String nome) {
 		this.nome = nome;
@@ -82,4 +83,12 @@ public class Instituicao {
 	public void setCidade(Cidade cidade) {
 		this.cidade = cidade;
 	}
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

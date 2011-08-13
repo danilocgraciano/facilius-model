@@ -29,4 +29,10 @@ public class TipoNota {
     public String getDescricao() {
         return this.descricao;
     }
+
+    @Override
+    public String toString() {
+        return getDescricao();
+    }
+
 }

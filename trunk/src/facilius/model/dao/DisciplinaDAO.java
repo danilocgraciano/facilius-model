@@ -79,7 +79,7 @@ public class DisciplinaDAO implements BaseDAO<Disciplina> {
 			// Aplicar critérios...
 			if (criteria != null) {
 				String nome = (String) criteria.get("nome");
-				if (nome != null && !aux.getDescricao().startsWith(nome)) {
+				if (nome != null && !aux.getNome().startsWith(nome)) {
 					ok = false;
 				}
 			}
