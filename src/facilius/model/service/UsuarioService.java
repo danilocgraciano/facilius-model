@@ -1,5 +1,6 @@
 package facilius.model.service;
 
+import facilius.model.UserConstants;
 import java.util.List;
 import java.util.Map;
 
@@ -49,4 +50,5 @@ public class UsuarioService implements BaseService<Usuario> {
         options.put("2", "Administrador");
         return options;
     }
+
 }
