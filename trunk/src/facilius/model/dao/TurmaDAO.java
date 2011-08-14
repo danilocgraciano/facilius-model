@@ -55,6 +55,11 @@ public class TurmaDAO implements BaseDAO<Turma> {
 
 			Turma aux = data.get(i);
 			boolean ok = true;
+
+                        String descricao = (String) criteria.get("nome");
+                        if (descricao != null && !aux.getDescricao().startsWith(descricao)){
+                            ok = false;
+                        }
 			// Aplicar critérios...
 			if (ok) {
 				resultados.add(aux);

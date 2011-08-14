@@ -7,6 +7,7 @@ import java.util.Map;
 
 import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
+import facilius.model.pojo.Usuario;
 import facilius.model.pojo.UsuarioCurso;
 
 public class UsuarioCursoDAO implements BaseDAO<UsuarioCurso> {
@@ -57,6 +58,12 @@ public class UsuarioCursoDAO implements BaseDAO<UsuarioCurso> {
 			UsuarioCurso aux = data.get(i);
 			boolean ok = true;
 			// Aplicar critérios...
+
+                        Usuario usuario = (Usuario) criteria.get("usuario");
+                        
+                        if (usuario != null && !aux.getUsuario().getId().equals(usuario.getId())){
+                            ok = false;
+                        }
 			if (ok) {
 				resultados.add(aux);
 			}

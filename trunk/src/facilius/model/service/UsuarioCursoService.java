@@ -41,4 +41,9 @@ public class UsuarioCursoService implements BaseService<UsuarioCurso> {
 		dao.update(e);
 	}
 
+        public String gerarMatricula(UsuarioCurso usuarioCurso){
+            return usuarioCurso.getUsuario().getId().toString() + "."+ usuarioCurso.getCurso().getId().toString();
+
+        }
+
 }

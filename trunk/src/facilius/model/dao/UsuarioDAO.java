@@ -85,6 +85,10 @@ public class UsuarioDAO implements BaseDAO<Usuario> {
 				if (nome != null && !aux.getNome().startsWith(nome)) {
 					ok = false;
 				}
+				Integer tipo = (Integer) criteria.get("tipo");
+				if ( tipo != null && aux.getTipo() != tipo ) {
+					ok = false;
+				}
 			}
 			if (ok) {
 				resultados.add(aux);

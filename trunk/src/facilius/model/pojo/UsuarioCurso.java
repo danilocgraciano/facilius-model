@@ -3,15 +3,15 @@ package facilius.model.pojo;
 
 public class UsuarioCurso {
 	private Long id;
-	private Long matricula;
+	private String matricula;
 	private Curso curso;
 	private Usuario usuario;
 
-	public void setMatricula(Long matricula) {
+	public void setMatricula(String matricula) {
 		this.matricula = matricula;
 	}
 
-	public Long getMatricula() {
+	public String getMatricula() {
 		return this.matricula;
 	}
 
