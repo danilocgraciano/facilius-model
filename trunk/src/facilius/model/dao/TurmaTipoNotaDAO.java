@@ -1,121 +1,77 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.TurmaTipoNota;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class TurmaTipoNotaDAO implements BaseDAO<TurmaTipoNota> {
 
-
-    private String path = "C:\\TurmaTipoNota.xml";
-
-    public Map<String, Object> loadFromFile(String path) {
-        Map<String, Object> conteudo = null;
-        try {
-            conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-        } catch (Exception e1) {
-            conteudo = new HashMap<String, Object>();
-            conteudo.put("sequence", new Long(0));
-            conteudo.put("data", new ArrayList<TurmaTipoNota>());
-        }
-        return conteudo;
-    }
-
-    private void saveToFile(Long sequence, List<TurmaTipoNota> data) throws Exception {
-
-        Map<String, Object> conteudo = new HashMap<String, Object>();
-        conteudo.put("sequence", sequence);
-        conteudo.put("data", data);
-
-        XMLPersist.saveToFile(conteudo, path);
-
-    }
-
     public void create(TurmaTipoNota e) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<TurmaTipoNota> data = (List<TurmaTipoNota>) conteudo.get("data");
-
-        e.setId(++sequence);
-        data.add(e);
-
-        saveToFile(sequence, data);
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into turma_tipo_nota values (?,?)");
+        ps.setLong(1, e.getId());
+        ps.setLong(2, e.getTipoNota().getId());
+        ps.execute();
+        ps.close();
     }
 
     public List<TurmaTipoNota> readByCriteria(Map<String, Object> criteria) throws Exception {
         List<TurmaTipoNota> resultados = new ArrayList<TurmaTipoNota>();
-        Map<String, Object> conteudo = loadFromFile(path);
-        List<TurmaTipoNota> data = (List<TurmaTipoNota>) conteudo.get("data");
-        for (int i = 0; i < data.size(); i++) {
-
-            TurmaTipoNota aux = data.get(i);
-            boolean ok = true;
-            //Aplicar critérios...
-            if (ok) {
-                resultados.add(aux);
+        String sentence = "select * from turma_tipo_nota where true";
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
             }
         }
         return resultados;
     }
 
     public TurmaTipoNota readById(Long id) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        List<TurmaTipoNota> data = (List<TurmaTipoNota>) conteudo.get("data");
 
-        TurmaTipoNota TurmaTipoNotaAux = null;
-
-        for (int i = 0; i < data.size(); i++) {
-            TurmaTipoNota TurmaTipoNota = data.get(i);
-            if (TurmaTipoNota != null) {
-                if (TurmaTipoNota.getId().equals(id)) {
-                    TurmaTipoNotaAux = data.get(i);
-                    break;
-                }
+        TurmaTipoNota turmaTipoNota = null;
+        String sentence = "select * from turma_tipo_nota where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                turmaTipoNota = this.extract(resultSet);
             }
         }
-        return TurmaTipoNotaAux;
+        return turmaTipoNota;
     }
 
     public void update(TurmaTipoNota e) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<TurmaTipoNota> data = (List<TurmaTipoNota>) conteudo.get("data");
-
-        for (int i = 0; i < data.size(); i++) {
-            TurmaTipoNota TurmaTipoNota = data.get(i);
-            if (TurmaTipoNota != null) {
-                if (TurmaTipoNota.getId().equals(e.getId())) {
-                    data.remove(i);
-                    data.add(e);
-                    break;
-                }
-            }
-        }
-
-        saveToFile(sequence, data);
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update turma_tipo_nota set turmaid = ?, set tipo_notaid = ? where turmaid = ?");
+        ps.setLong(1, e.getId());
+        ps.setLong(2, e.getTipoNota().getId());
+        ps.setLong(3, e.getId());
+        ps.execute();
+        ps.close();
     }
 
     public void delete(Long id) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<TurmaTipoNota> data = (List<TurmaTipoNota>) conteudo.get("data");
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from turma_tipo_nota where turmaid = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
 
-        for (int i = 0; i < data.size(); i++) {
-            TurmaTipoNota TurmaTipoNota = data.get(i);
-            if (TurmaTipoNota != null) {
-                if (TurmaTipoNota.getId().equals(id)) {
-                    data.remove(i);
-                    break;
-                }
-            }
-        }
-
-        saveToFile(sequence, data);
     }
 
+    public TurmaTipoNota extract(ResultSet resultSet) throws Exception {
+        TurmaTipoNota turmaTipoNota = new TurmaTipoNota();
+        turmaTipoNota.setId(resultSet.getLong("turmaid"));
+        turmaTipoNota.setTipoNota(ServiceLocator.getTipoNotaService().readById(resultSet.getLong("tipo_notaid")));
+        turmaTipoNota.setTurma(ServiceLocator.getTurmaService().readById(resultSet.getLong("turmaid")));
+        return turmaTipoNota;
+    }
 }

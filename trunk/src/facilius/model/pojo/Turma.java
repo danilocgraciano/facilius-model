@@ -8,6 +8,7 @@ public class Turma {
 	private int ano;
 	private ArrayList<UsuarioCursoTurma> usuarioTurma;
 	private ArrayList<TurmaTipoNota> turmaTipoNota;
+        private Disciplina disciplina;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -48,4 +49,19 @@ public class Turma {
 	public void setTurmaTipoNota(ArrayList<TurmaTipoNota> turmaTipoNota) {
 		this.turmaTipoNota = turmaTipoNota;
 	}
+
+    @Override
+    public String toString() {
+        return getDescricao() + " - " + getAno();
+    }
+
+    public Disciplina getDisciplina() {
+        return disciplina;
+    }
+
+    public void setDisciplina(Disciplina disciplina) {
+        this.disciplina = disciplina;
+    }
+
+
 }

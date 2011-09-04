@@ -1,133 +1,107 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.Instituicao;
+import java.sql.PreparedStatement;
 
 public class InstituicaoDAO implements BaseDAO<Instituicao> {
 
-	private String path = "C:\\Instituicao.xml";
+    @Override
+    public void create(Instituicao e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into instituicao(nome,endereco,bairro,numero,telefone1,telefone2,cidadeid) values(?,?,?,?,?,?,?)");
+        ps.setString(1, e.getNome());
+        ps.setString(2, e.getEndereco());
+        ps.setString(3, e.getBairro());
+        ps.setString(4, e.getNumero());
+        ps.setString(5, e.getTelefone1());
+        ps.setString(6, e.getTelefone2());
+        ps.setLong(7, e.getCidade().getId());
+//        ps.setByte(8, e.getLogo());
+        ps.execute();
+        ps.close();
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<Instituicao>());
-		}
-		return conteudo;
-	}
+    }
 
-	private void saveToFile(Long sequence, List<Instituicao> data)
-			throws Exception {
+    @Override
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from instituicao where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+    @Override
+    public List<Instituicao> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
+        List<Instituicao> resultados = new ArrayList<Instituicao>();
+        String sentence = "select * from instituicao where true";
+        if (criteria != null){
+            String nome = (String)criteria.get("nome");
+            if (nome != null && !nome.trim().isEmpty())
+                sentence += " and nome ilike '%"+nome+"%'";
+        }
+        java.sql.Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
+            }
+        }
+        return resultados;
+    }
 
-		XMLPersist.saveToFile(conteudo, path);
+    @Override
+    public Instituicao readById(Long id) throws Exception {
+        Instituicao instituicao = null;
+        String sentence = "select * from instituicao where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                instituicao = this.extract(resultSet);
+            }
+        }
+        return instituicao;
+    }
 
-	}
+    @Override
+    public void update(Instituicao e) throws Exception {
+        String sentence = "update instituicao set nome = ?, endereco = ?,bairro = ?,numero = ?,telefone1 = ?,telefone2 = ?,cidadeid = ?,email = ? where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setString(1, e.getNome());
+        ps.setString(2, e.getEndereco());
+        ps.setString(3, e.getBairro());
+        ps.setString(4, e.getNumero());
+        ps.setString(5, e.getTelefone1());
+        ps.setString(6, e.getTelefone2());
+        ps.setLong(7, e.getCidade().getId());
+//        ps.setByte(8, e.getLogo());
+        ps.setString(8, e.getEmail());
+        ps.setLong(9, e.getId());
+        ps.execute();
+        ps.close();
+    }
 
-	@Override
-	public void create(Instituicao e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Instituicao> data = (List<Instituicao>) conteudo.get("data");
-
-		e.setId(++sequence);
-		data.add(e);
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Instituicao> data = (List<Instituicao>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Instituicao Instituicao = data.get(i);
-			if (Instituicao != null) {
-				if (Instituicao.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public List<Instituicao> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<Instituicao> resultados = new ArrayList<Instituicao>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Instituicao> data = (List<Instituicao>) conteudo.get("data");
-		for (int i = 0; i < data.size(); i++) {
-
-			Instituicao aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (criteria != null) {
-				String nome = (String) criteria.get("nome");
-				if (nome != null && !aux.getNome().startsWith(nome)) {
-					ok = false;
-				}
-			}
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
-
-	@Override
-	public Instituicao readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Instituicao> data = (List<Instituicao>) conteudo.get("data");
-
-		Instituicao InstituicaoAux = null;
-
-		for (int i = 0; i < data.size(); i++) {
-			Instituicao Instituicao = data.get(i);
-			if (Instituicao != null) {
-				if (Instituicao.getId().equals(id)) {
-					InstituicaoAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return InstituicaoAux;
-	}
-
-	@Override
-	public void update(Instituicao e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Instituicao> data = (List<Instituicao>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Instituicao Instituicao = data.get(i);
-			if (Instituicao != null) {
-				if (Instituicao.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
+    public Instituicao extract(ResultSet resultSet) throws Exception {
+        Instituicao instituicao = new Instituicao();
+        instituicao.setBairro(resultSet.getString("bairro"));
+        instituicao.setCidade(ServiceLocator.getCidadeService().readById(resultSet.getLong("cidadeid")));
+        instituicao.setEmail(resultSet.getString("email"));
+        instituicao.setEndereco(resultSet.getString("endereco"));
+        instituicao.setId(resultSet.getLong("id"));
+        instituicao.setLogo(resultSet.getByte("logo"));
+        instituicao.setNome(resultSet.getString("nome"));
+        instituicao.setNumero(resultSet.getString("numero"));
+        instituicao.setTelefone1(resultSet.getString("telefone1"));
+        instituicao.setTelefone2(resultSet.getString("telefone2"));
+        return instituicao;
+    }
 }

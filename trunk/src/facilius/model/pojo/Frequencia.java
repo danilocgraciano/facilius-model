@@ -4,7 +4,6 @@ public class Frequencia {
 	private Long id;
 	private UsuarioCursoTurma usuarioCursoTurma;
 	private Aula aula;
-	private java.util.Date data;
 	private boolean status;
 	private UsuarioCursoTurma turma;
 
@@ -38,14 +37,6 @@ public class Frequencia {
 
 	public boolean isStatus() {
 		return this.status;
-	}
-
-	public java.util.Date getData() {
-		return data;
-	}
-
-	public void setData(java.util.Date data) {
-		this.data = data;
 	}
 
 	public Long getId() {

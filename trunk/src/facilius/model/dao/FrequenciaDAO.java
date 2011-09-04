@@ -1,121 +1,79 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.Frequencia;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class FrequenciaDAO implements BaseDAO<Frequencia> {
 
-	private String path = "C:\\Frequencia.xml";
+    public void create(Frequencia e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into frequencia values (?,?,?)");
+        ps.setLong(1, e.getUsuarioCursoTurma().getId());
+        ps.setLong(2, e.getAula().getId());
+        ps.setBoolean(3, e.isStatus());
+        ps.execute();
+        ps.close();
+    }
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<Frequencia>());
-		}
-		return conteudo;
-	}
+    public List<Frequencia> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
+        List<Frequencia> resultados = new ArrayList<Frequencia>();
+        String sentence = "select * from frequencia where true";
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
+            }
+        }
+        return resultados;
+    }
 
-	private void saveToFile(Long sequence, List<Frequencia> data)
-			throws Exception {
+    public Frequencia readById(Long id) throws Exception {
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+        Frequencia frequencia = null;
+        String sentence = "select * from frequencia where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                frequencia = this.extract(resultSet);
+            }
+        }
+        return frequencia;
+    }
 
-		XMLPersist.saveToFile(conteudo, path);
+    public void update(Frequencia e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update frequencia set usuario_curso_turmaid = ?, set aulaid = ?, set status = ? where id = ?");
+        ps.setLong(1, e.getUsuarioCursoTurma().getId());
+        ps.setLong(2, e.getAula().getId());
+        ps.setBoolean(3, e.isStatus());
+        ps.setLong(4, e.getId());
+        ps.execute();
+        ps.close();
+    }
 
-	}
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from frequencia where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-	public void create(Frequencia e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Frequencia> data = (List<Frequencia>) conteudo.get("data");
-
-		e.setId(++sequence);
-		data.add(e);
-
-		saveToFile(sequence, data);
-	}
-
-	public List<Frequencia> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<Frequencia> resultados = new ArrayList<Frequencia>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Frequencia> data = (List<Frequencia>) conteudo.get("data");
-		for (int i = 0; i < data.size(); i++) {
-
-			Frequencia aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
-
-	public Frequencia readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Frequencia> data = (List<Frequencia>) conteudo.get("data");
-
-		Frequencia FrequenciaAux = null;
-
-		for (int i = 0; i < data.size(); i++) {
-			Frequencia Frequencia = data.get(i);
-			if (Frequencia != null) {
-				if (Frequencia.getId().equals(id)) {
-					FrequenciaAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return FrequenciaAux;
-	}
-
-	public void update(Frequencia e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Frequencia> data = (List<Frequencia>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Frequencia Frequencia = data.get(i);
-			if (Frequencia != null) {
-				if (Frequencia.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Frequencia> data = (List<Frequencia>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Frequencia Frequencia = data.get(i);
-			if (Frequencia != null) {
-				if (Frequencia.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
+    public Frequencia extract(ResultSet resultSet) throws Exception {
+        Frequencia freq = new Frequencia();
+        freq.setAula(ServiceLocator.getAulaService().readById(resultSet.getLong("usuario_curso_turmaid")));
+        freq.setId(resultSet.getLong("id"));
+        freq.setStatus(resultSet.getBoolean("status"));
+        return freq;
+    }
 }

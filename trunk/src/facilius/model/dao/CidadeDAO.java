@@ -1,132 +1,91 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.Cidade;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class CidadeDAO implements BaseDAO<Cidade> {
 
-	private String path = "C:\\Cidade.xml";
+    @Override
+    public void create(Cidade e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into cidade values(?,?)");
+        ps.setString(1, e.getDescricao());
+        ps.setString(2, e.getUf());
+        ps.execute();
+        ps.close();
+    }
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<Cidade>());
-		}
-		return conteudo;
-	}
+    @Override
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from cidade where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-	private void saveToFile(Long sequence, List<Cidade> data) throws Exception {
+    @Override
+    public List<Cidade> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+        List<Cidade> resultados = new ArrayList<Cidade>();
 
-		XMLPersist.saveToFile(conteudo, path);
+        String sentence = "select * from cidade where true";
+        if (criteria != null) {
+            String nome = (String) criteria.get("nome");
+            if (nome != null && !nome.trim().isEmpty()) {
+                sentence += " and descricao ilike \'%" + nome + "%\'";
+            }
+        }
 
-	}
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                Cidade cidade = this.extract(resultSet);
+                resultados.add(cidade);
+            }
+        }
 
-	@Override
-	public void create(Cidade e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Cidade> data = (List<Cidade>) conteudo.get("data");
+        return resultados;
+    }
 
-		e.setId(++sequence);
-		data.add(e);
+    @Override
+    public Cidade readById(Long id) throws Exception {
+        Cidade cidade = null;
+        String sentence = "select * from cidade where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                cidade = this.extract(resultSet);
+            }
+        }
+        return cidade;
+    }
 
-		saveToFile(sequence, data);
-	}
+    @Override
+    public void update(Cidade e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update cidade set descricao = ?, set uf = ? where id = ?");
+        ps.setString(1, e.getDescricao());
+        ps.setString(2, e.getUf());
+        ps.setLong(3, e.getId());
+        ps.execute();
+        ps.close();
+    }
 
-	@Override
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Cidade> data = (List<Cidade>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Cidade Cidade = data.get(i);
-			if (Cidade != null) {
-				if (Cidade.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public List<Cidade> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<Cidade> resultados = new ArrayList<Cidade>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Cidade> data = (List<Cidade>) conteudo.get("data");
-		for (int i = 0; i < data.size(); i++) {
-
-			Cidade aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (criteria != null) {
-				String nome = (String) criteria.get("nome");
-				if (nome != null && !aux.getDescricao().startsWith(nome)) {
-					ok = false;
-				}
-			}
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
-
-	@Override
-	public Cidade readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Cidade> data = (List<Cidade>) conteudo.get("data");
-
-		Cidade CidadeAux = null;
-
-		for (int i = 0; i < data.size(); i++) {
-			Cidade Cidade = data.get(i);
-			if (Cidade != null) {
-				if (Cidade.getId().equals(id)) {
-					CidadeAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return CidadeAux;
-	}
-
-	@Override
-	public void update(Cidade e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Cidade> data = (List<Cidade>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Cidade Cidade = data.get(i);
-			if (Cidade != null) {
-				if (Cidade.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
+    public Cidade extract(ResultSet resultSet) throws Exception {
+        Cidade cidade = new Cidade();
+        cidade.setId(resultSet.getLong("id"));
+        cidade.setDescricao(resultSet.getString("descricao"));
+        cidade.setUf(resultSet.getString("uf"));
+        return cidade;
+    }
 }

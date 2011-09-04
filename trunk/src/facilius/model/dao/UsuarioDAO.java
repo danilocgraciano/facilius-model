@@ -1,139 +1,103 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.Usuario;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class UsuarioDAO implements BaseDAO<Usuario> {
 
-	private String path = "C:\\Usuario.xml";
+    @Override
+    public void create(Usuario e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into usuario(login,nome,senha,email,tipo) values(?,?,?,?,?)");
+        ps.setString(1, e.getLogin());
+        ps.setString(2, e.getNome());
+//        ps.setByte(3, e.getFoto());
+        ps.setString(3, e.getSenha());
+        ps.setString(4, e.getEmail());
+        ps.setInt(5, e.getTipo());
+        ps.execute();
+        ps.close();
+    }
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<Usuario>());
-		}
-		return conteudo;
-	}
+    @Override
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from usuario where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-	private void saveToFile(Long sequence, List<Usuario> data) throws Exception {
+    @Override
+    public List<Usuario> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
+        List<Usuario> resultados = new ArrayList<Usuario>();
+        String sentence = "select * from usuario where true";
+        if (criteria != null) {
+            String nome = (String) criteria.get("nome");
+            if (nome != null && !nome.trim().isEmpty()) {
+                sentence += " and nome ilike '%" + nome + "%'";
+            }
+            Integer tipo = (Integer) criteria.get("tipo");
+            if (tipo != null) {
+                sentence += " and tipo = " + tipo + "";
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+            }
+        }
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
+            }
+        }
+        return resultados;
+    }
 
-		XMLPersist.saveToFile(conteudo, path);
+    @Override
+    public Usuario readById(Long id) throws Exception {
+        Usuario user = null;
+        String sentence = "select * from usuario where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                user = this.extract(resultSet);
+            }
+        }
+        return user;
+    }
 
-	}
+    @Override
+    public void update(Usuario e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update usuario set login = ?, nome = ?, senha = ?, email = ?, tipo = ? where id = ?");
+        ps.setString(1, e.getLogin());
+        ps.setString(2, e.getNome());
+//        ps.setByte(3, e.getFoto());
+        ps.setString(3, e.getSenha());
+        ps.setString(4, e.getEmail());
+        ps.setInt(5, e.getTipo());
+        ps.setLong(6, e.getId());
+        ps.execute();
+        ps.close();
+    }
 
-	@Override
-	public void create(Usuario e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Usuario> data = (List<Usuario>) conteudo.get("data");
-
-		e.setId(++sequence);
-		data.add(e);
-
-		saveToFile(sequence, data);
-
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Usuario> data = (List<Usuario>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Usuario Usuario = data.get(i);
-			if (Usuario != null) {
-				if (Usuario.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public List<Usuario> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<Usuario> resultados = new ArrayList<Usuario>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Usuario> data = (List<Usuario>) conteudo.get("data");
-		for (int i = 0; i < data.size(); i++) {
-
-			Usuario aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (criteria != null) {
-				String nome = (String) criteria.get("nome");
-				if (nome != null && !aux.getNome().startsWith(nome)) {
-					ok = false;
-				}
-				Integer tipo = (Integer) criteria.get("tipo");
-				if ( tipo != null && aux.getTipo() != tipo ) {
-					ok = false;
-				}
-			}
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
-
-	@Override
-	public Usuario readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Usuario> data = (List<Usuario>) conteudo.get("data");
-
-		Usuario UsuarioAux = null;
-
-		for (int i = 0; i < data.size(); i++) {
-			Usuario Usuario = data.get(i);
-			if (Usuario != null) {
-				if (Usuario.getId().equals(id)) {
-					UsuarioAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return UsuarioAux;
-	}
-
-	@Override
-	public void update(Usuario e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Usuario> data = (List<Usuario>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Usuario Usuario = data.get(i);
-			if (Usuario != null) {
-				if (Usuario.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
+    public Usuario extract(ResultSet resultSet) throws Exception {
+        Usuario user = new Usuario();
+        user.setEmail(resultSet.getString("email"));
+        user.setFoto(resultSet.getByte("foto"));
+        user.setId(resultSet.getLong("id"));
+        user.setLogin(resultSet.getString("login"));
+        user.setNome(resultSet.getString("nome"));
+        user.setSenha(resultSet.getString("senha"));
+        user.setTipo(resultSet.getInt("tipo"));
+        return user;
+    }
 }

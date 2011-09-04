@@ -1,12 +1,13 @@
 package facilius.model.pojo;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Aula {
 	private Long id;
 	private String titulo;
 	private String descricao;
-	private String data;
+	private Date data;
 	private ArrayList<Frequencia> turmaFrequencia;
 	private ArrayList<Material> materiais;
 
@@ -26,11 +27,11 @@ public class Aula {
 		return this.descricao;
 	}
 
-	public void setData(String data) {
+	public void setData(java.util.Date data) {
 		this.data = data;
 	}
 
-	public String getData() {
+	public java.util.Date getData() {
 		return this.data;
 	}
 

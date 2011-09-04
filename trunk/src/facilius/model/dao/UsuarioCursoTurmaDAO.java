@@ -1,126 +1,102 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
+import facilius.model.pojo.Turma;
+import facilius.model.pojo.UsuarioCurso;
 import facilius.model.pojo.UsuarioCursoTurma;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class UsuarioCursoTurmaDAO implements BaseDAO<UsuarioCursoTurma> {
 
-	private String path = "C:\\UsuarioCursoTurma.xml";
+    public void create(UsuarioCursoTurma e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into usuario_curso_turma(usuario_cursomatricula,turmaid) values (?,?)");
+        ps.setLong(1, e.getUsuarioCurso().getMatricula());
+        ps.setLong(2, e.getTurma().getId());
+        ps.execute();
+        ps.close();
+    }
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<UsuarioCursoTurma>());
-		}
-		return conteudo;
-	}
+    public List<UsuarioCursoTurma> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
+        List<UsuarioCursoTurma> resultados = new ArrayList<UsuarioCursoTurma>();
+        String sentence = "select * from usuario_curso_turma where true";
+        if (criteria != null) {
+            Object obj = criteria.get("turma");
+            Turma turma = null;
+            if (obj != null) {
+                turma = (Turma) obj;
+            }
 
-	private void saveToFile(Long sequence, List<UsuarioCursoTurma> data)
-			throws Exception {
+            if (turma != null) {
+                sentence += " and turmaid = '" + turma.getId() + "'";
+            }
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+            UsuarioCurso usuarioCurso = (UsuarioCurso) criteria.get("usuarioCurso");
+            if (usuarioCurso != null) {
+                sentence += " and usuario_cursomatricula = '" + usuarioCurso.getMatricula() + "'";
+            }
+        }
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
+            }
 
-		XMLPersist.saveToFile(conteudo, path);
+        }
+        return resultados;
+    }
 
-	}
+    public UsuarioCursoTurma readById(Long id) throws Exception {
+        UsuarioCursoTurma usuarioCursoTurma = null;
+        String sentence = "select * from usuario_curso_turma where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                usuarioCursoTurma = this.extract(resultSet);
+            }
 
-	public void create(UsuarioCursoTurma e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<UsuarioCursoTurma> data = (List<UsuarioCursoTurma>) conteudo
-				.get("data");
+        }
 
-		e.setId(++sequence);
-		data.add(e);
+        return usuarioCursoTurma;
+    }
 
-		saveToFile(sequence, data);
-	}
+    public void update(UsuarioCursoTurma e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update usuario_curso_turma set usuario_cursomatricula = ?, set turmaid = ? where id = ?");
+        ps.setLong(1, e.getUsuarioCurso().getMatricula());
+        ps.setLong(2, e.getTurma().getId());
+        ps.setLong(3, e.getId());
+        ps.execute();
+        ps.close();
+    }
 
-	public List<UsuarioCursoTurma> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<UsuarioCursoTurma> resultados = new ArrayList<UsuarioCursoTurma>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<UsuarioCursoTurma> data = (List<UsuarioCursoTurma>) conteudo
-				.get("data");
-		for (int i = 0; i < data.size(); i++) {
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from usuario_curso_turma where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
 
-			UsuarioCursoTurma aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
+    }
 
-	public UsuarioCursoTurma readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<UsuarioCursoTurma> data = (List<UsuarioCursoTurma>) conteudo
-				.get("data");
+    public UsuarioCursoTurma extract(ResultSet resultSet) throws Exception {
+        UsuarioCursoTurma usuarioCursoTurma = new UsuarioCursoTurma();
 
-		UsuarioCursoTurma UsuarioCursoTurmaAux = null;
+        usuarioCursoTurma.setId(resultSet.getLong("id"));
 
-		for (int i = 0; i < data.size(); i++) {
-			UsuarioCursoTurma UsuarioCursoTurma = data.get(i);
-			if (UsuarioCursoTurma != null) {
-				if (UsuarioCursoTurma.getId().equals(id)) {
-					UsuarioCursoTurmaAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return UsuarioCursoTurmaAux;
-	}
+        usuarioCursoTurma.setTurma(ServiceLocator.getTurmaService().readById(resultSet.getLong("turmaid")));
 
-	public void update(UsuarioCursoTurma e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<UsuarioCursoTurma> data = (List<UsuarioCursoTurma>) conteudo
-				.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			UsuarioCursoTurma UsuarioCursoTurma = data.get(i);
-			if (UsuarioCursoTurma != null) {
-				if (UsuarioCursoTurma.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<UsuarioCursoTurma> data = (List<UsuarioCursoTurma>) conteudo
-				.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			UsuarioCursoTurma UsuarioCursoTurma = data.get(i);
-			if (UsuarioCursoTurma != null) {
-				if (UsuarioCursoTurma.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
+        usuarioCursoTurma.setUsuarioCurso(ServiceLocator.getUsuarioCursoService().readById(resultSet.getLong("usuario_cursomatricula")));
+        return usuarioCursoTurma;
+    }
 }

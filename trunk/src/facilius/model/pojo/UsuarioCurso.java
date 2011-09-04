@@ -2,16 +2,15 @@ package facilius.model.pojo;
 
 
 public class UsuarioCurso {
-	private Long id;
-	private String matricula;
+	private Long matricula;
 	private Curso curso;
 	private Usuario usuario;
 
-	public void setMatricula(String matricula) {
+	public void setMatricula(Long matricula) {
 		this.matricula = matricula;
 	}
 
-	public String getMatricula() {
+	public Long getMatricula() {
 		return this.matricula;
 	}
 
@@ -31,11 +30,10 @@ public class UsuarioCurso {
 		return this.usuario;
 	}
 
-	public Long getId() {
-		return id;
-	}
+    @Override
+    public String toString() {
+        return getMatricula() + " - " + getUsuario().getNome();
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+
 }
