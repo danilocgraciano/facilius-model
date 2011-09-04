@@ -1,133 +1,109 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
 import facilius.model.base.BaseDAO;
+import facilius.model.pojo.TipoNota;
+import facilius.model.pojo.UsuarioCursoTurma;
 import facilius.model.pojo.ValorNota;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
-
 public class ValorNotaDAO implements BaseDAO<ValorNota> {
-	
-	private String path = "C:\\ValorNota.xml";
 
-    public Map<String, Object> loadFromFile(String path) {
-        Map<String, Object> conteudo = null;
-        try {
-            conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-        } catch (Exception e1) {
-            conteudo = new HashMap<String, Object>();
-            conteudo.put("sequence", new Long(0));
-            conteudo.put("data", new ArrayList<ValorNota>());
-        }
-        return conteudo;
+    @Override
+    public void create(ValorNota e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into valor_nota(valor,tipo_notaid,usuario_curso_turmaid) values(?,?,?)");
+        ps.setFloat(1, e.getValor());
+        ps.setLong(2, e.getTipoNota().getId());
+        ps.setLong(3, e.getUsuarioCursoTurma().getId());
+        ps.execute();
+        ps.close();
     }
 
-    private void saveToFile(Long sequence, List<ValorNota> data) throws Exception {
-
-        Map<String, Object> conteudo = new HashMap<String, Object>();
-        conteudo.put("sequence", sequence);
-        conteudo.put("data", data);
-
-        XMLPersist.saveToFile(conteudo, path);
-
+    @Override
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from valor_nota where id = ?");
+        ps.setFloat(1, id);
+        ps.execute();
+        ps.close();
     }
 
-	@Override
-	public void create(ValorNota e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<ValorNota> data = (List<ValorNota>) conteudo.get("data");
-
-		e.setId(++sequence);
-		data.add(e);
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public void delete(Long id) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<ValorNota> data = (List<ValorNota>) conteudo.get("data");
-
-        for (int i = 0; i < data.size(); i++) {
-            ValorNota ValorNota = data.get(i);
-            if (ValorNota != null) {
-                if (ValorNota.getId().equals(id)) {
-                    data.remove(i);
-                    break;
-                }
-            }
-        }
-
-        saveToFile(sequence, data);
-    }
-
-	@Override
-	public List<ValorNota> readByCriteria(Map<String, Object> criteria)throws Exception {
+    @Override
+    public List<ValorNota> readByCriteria(Map<String, Object> criteria) throws Exception {
         List<ValorNota> resultados = new ArrayList<ValorNota>();
-        Map<String, Object> conteudo = loadFromFile(path);
-        List<ValorNota> data = (List<ValorNota>) conteudo.get("data");
-        for (int i = 0; i < data.size(); i++) {
+        String sentence = "select * from valor_nota where true";
+        if (criteria != null) {
 
-            ValorNota aux = data.get(i);
-            boolean ok = true;
-            //Aplicar critérios...
-            if (criteria != null) {
-                String nome = (String) criteria.get("tipoNota");
-                if (nome != null && !aux.getTipoNota().getDescricao().startsWith(nome)) {
-                    ok = false;
-                }
+            TipoNota tipoNota = (TipoNota) criteria.get("tipoNota");
+            if (tipoNota != null) {
+                sentence += " and tipo_notaid = \'" + tipoNota.getId() + "\'";
             }
-            if (ok) {
-                resultados.add(aux);
+
+            UsuarioCursoTurma usuario = (UsuarioCursoTurma) criteria.get("usuarioCursoTurma");
+
+            if (usuario != null) {
+                sentence += " and usuario_curso_turmaid = \'" + usuario.getId() + "\'";
+            }
+
+//            obj = criteria.get("turma");
+//            Turma turma = null;
+//            if (obj != null) {
+//                turma = (Turma) obj;
+//            }
+//
+//            if (turma != null && !aux.getUsuarioCursoTurma().getTurma().getId().equals(turma.getId())) {
+//                ok = false;
+//            }
+        }
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
             }
         }
         return resultados;
-    
-	}
 
-	@Override
-	public ValorNota readById(Long id) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        List<ValorNota> data = (List<ValorNota>) conteudo.get("data");
-
-        ValorNota ValorNotaAux = null;
-
-        for (int i = 0; i < data.size(); i++) {
-            ValorNota ValorNota = data.get(i);
-            if (ValorNota != null) {
-                if (ValorNota.getId().equals(id)) {
-                    ValorNotaAux = data.get(i);
-                    break;
-                }
-            }
-        }
-        return ValorNotaAux;
     }
 
-	@Override
-	public void update(ValorNota e) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<ValorNota> data = (List<ValorNota>) conteudo.get("data");
-
-        for (int i = 0; i < data.size(); i++) {
-            ValorNota ValorNota = data.get(i);
-            if (ValorNota != null) {
-                if (ValorNota.getId().equals(e.getId())) {
-                    data.remove(i);
-                    data.add(e);
-                    break;
-                }
+    @Override
+    public ValorNota readById(Long id) throws Exception {
+        ValorNota vNota = null;
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("select * from valor_nota where id = ?");
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                vNota = this.extract(resultSet);
             }
         }
 
-        saveToFile(sequence, data);
+        return vNota;
     }
 
+    @Override
+    public void update(ValorNota e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update valor_nota set valor = ?, set tipo_notaid = ?, set usuario_curso_turmaid = ? where id = ?");
+        ps.setFloat(1, e.getValor());
+        ps.setLong(2, e.getTipoNota().getId());
+        ps.setLong(3, e.getUsuarioCursoTurma().getId());
+        ps.setLong(4, e.getId());
+        ps.execute();
+        ps.close();
+    }
+
+    public ValorNota extract(ResultSet resultSet) throws Exception {
+        ValorNota vNota = new ValorNota();
+        vNota.setId(resultSet.getLong("id"));
+        vNota.setValor(resultSet.getFloat("valor"));
+        vNota.setTipoNota(ServiceLocator.getTipoNotaService().readById(resultSet.getLong("tipo_notaid")));
+        vNota.setUsuarioCursoTurma(ServiceLocator.getUsuarioCursoTurmaService().readById(resultSet.getLong("usuario_curso_turmaid")));
+        return vNota;
+    }
 }

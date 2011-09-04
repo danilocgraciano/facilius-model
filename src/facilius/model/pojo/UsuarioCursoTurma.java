@@ -6,8 +6,6 @@ public class UsuarioCursoTurma {
 	private Long id;
 	private UsuarioCurso usuarioCurso;
 	private Turma turma;
-	private ArrayList<ValorNota> notas;
-	private ArrayList<Frequencia> turmaFrequencia;
 
 	public void setUsuarioCurso(UsuarioCurso usuarioCurso) {
 		this.usuarioCurso = usuarioCurso;
@@ -33,19 +31,9 @@ public class UsuarioCursoTurma {
 		this.id = id;
 	}
 
-	public ArrayList<ValorNota> getNotas() {
-		return notas;
-	}
+    @Override
+    public String toString() {
+        return getUsuarioCurso().getMatricula() + " - " + getUsuarioCurso().getUsuario().getNome();
+    }
 
-	public void setNotas(ArrayList<ValorNota> notas) {
-		this.notas = notas;
-	}
-
-	public ArrayList<Frequencia> getTurmaFrequencia() {
-		return turmaFrequencia;
-	}
-
-	public void setTurmaFrequencia(ArrayList<Frequencia> turmaFrequencia) {
-		this.turmaFrequencia = turmaFrequencia;
-	}
 }

@@ -1,124 +1,82 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.TipoNota;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ldsutils.XMLPersist;
 
 public class TipoNotaDAO implements BaseDAO<TipoNota> {
 
-    private String path = "C:\\TipoNota.xml";
-
-    public Map<String, Object> loadFromFile(String path) {
-        Map<String, Object> conteudo = null;
-        try {
-            conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-        } catch (Exception e1) {
-            conteudo = new HashMap<String, Object>();
-            conteudo.put("sequence", new Long(0));
-            conteudo.put("data", new ArrayList<TipoNota>());
-        }
-        return conteudo;
-    }
-
-    private void saveToFile(Long sequence, List<TipoNota> data) throws Exception {
-
-        Map<String, Object> conteudo = new HashMap<String, Object>();
-        conteudo.put("sequence", sequence);
-        conteudo.put("data", data);
-
-        XMLPersist.saveToFile(conteudo, path);
-
-    }
-
     public void create(TipoNota e) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<TipoNota> data = (List<TipoNota>) conteudo.get("data");
-
-        e.setId(++sequence);
-        data.add(e);
-
-        saveToFile(sequence, data);
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into tipo_nota(oficial,descricao) values (?,?)");
+        ps.setBoolean(1, e.isOficial());
+        ps.setString(2, e.getDescricao());
+        ps.execute();
+        ps.close();
     }
 
     public List<TipoNota> readByCriteria(Map<String, Object> criteria) throws Exception {
         List<TipoNota> resultados = new ArrayList<TipoNota>();
-        Map<String, Object> conteudo = loadFromFile(path);
-        List<TipoNota> data = (List<TipoNota>) conteudo.get("data");
-        for (int i = 0; i < data.size(); i++) {
-
-            TipoNota aux = data.get(i);
-            boolean ok = true;
-            //Aplicar critérios...
-            if (criteria != null) {
-                String nome = (String) criteria.get("nome");
-                if (nome != null && !aux.getDescricao().startsWith(nome)) {
-                    ok = false;
-                }
+        String sentence = "select * from tipo_nota where true";
+        if (criteria != null) {
+            String nome = (String) criteria.get("nome");
+            if (nome != null && !nome.trim().isEmpty()) {
+                sentence += " and descricao ilike \'%" + nome + "%\'";
             }
-            if (ok) {
-                resultados.add(aux);
+        }
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
             }
         }
         return resultados;
     }
 
     public TipoNota readById(Long id) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        List<TipoNota> data = (List<TipoNota>) conteudo.get("data");
+        TipoNota tipoNota = null;
 
-        TipoNota tipoNotaAux = null;
+        String sentence = "select * from tipo_nota where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
 
-        for (int i = 0; i < data.size(); i++) {
-            TipoNota tipoNota = data.get(i);
-            if (tipoNota != null) {
-                if (tipoNota.getId().equals(id)) {
-                    tipoNotaAux = data.get(i);
-                    break;
-                }
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                tipoNota = this.extract(resultSet);
             }
         }
-        return tipoNotaAux;
+        ps.close();
+        return tipoNota;
     }
 
     public void update(TipoNota e) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<TipoNota> data = (List<TipoNota>) conteudo.get("data");
-
-        for (int i = 0; i < data.size(); i++) {
-            TipoNota tipoNota = data.get(i);
-            if (tipoNota != null) {
-                if (tipoNota.getId().equals(e.getId())) {
-                    data.remove(i);
-                    data.add(e);
-                    break;
-                }
-            }
-        }
-
-        saveToFile(sequence, data);
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update tipo_nota set oficial = ?, descricao = ? where id = ?");
+        ps.setBoolean(1, e.isOficial());
+        ps.setString(2, e.getDescricao());
+        ps.setLong(3, e.getId());
+        ps.execute();
+        ps.close();
     }
 
     public void delete(Long id) throws Exception {
-        Map<String, Object> conteudo = loadFromFile(path);
-        Long sequence = (Long) conteudo.get("sequence");
-        List<TipoNota> data = (List<TipoNota>) conteudo.get("data");
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from tipo_nota where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-        for (int i = 0; i < data.size(); i++) {
-            TipoNota tipoNota = data.get(i);
-            if (tipoNota != null) {
-                if (tipoNota.getId().equals(id)) {
-                    data.remove(i);
-                    break;
-                }
-            }
-        }
-
-        saveToFile(sequence, data);
+    public TipoNota extract(ResultSet resultSet) throws Exception {
+        TipoNota tiponota = new TipoNota();
+        tiponota.setDescricao(resultSet.getString("descricao"));
+        tiponota.setId(resultSet.getLong("id"));
+        tiponota.setOficial(resultSet.getBoolean("oficial"));
+        return tiponota;
     }
 }

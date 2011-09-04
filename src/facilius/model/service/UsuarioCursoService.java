@@ -6,6 +6,7 @@ import java.util.Map;
 import facilius.model.base.BaseService;
 import facilius.model.dao.UsuarioCursoDAO;
 import facilius.model.pojo.UsuarioCurso;
+import java.util.Calendar;
 
 public class UsuarioCursoService implements BaseService<UsuarioCurso> {
 
@@ -41,8 +42,10 @@ public class UsuarioCursoService implements BaseService<UsuarioCurso> {
 		dao.update(e);
 	}
 
-        public String gerarMatricula(UsuarioCurso usuarioCurso){
-            return usuarioCurso.getUsuario().getId().toString() + "."+ usuarioCurso.getCurso().getId().toString();
+        public Long gerarMatricula(UsuarioCurso usuarioCurso){
+            Calendar cal = Calendar.getInstance();
+            int ano = cal.get(Calendar.YEAR);
+            return Long.parseLong(usuarioCurso.getUsuario().getId().toString() + usuarioCurso.getCurso().getId().toString() + String.valueOf(ano));
 
         }
 

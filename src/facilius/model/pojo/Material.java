@@ -5,6 +5,7 @@ public class Material {
 	private String nome;
 	private String descricao;
 	private byte arquivo;
+        private Aula aula;
 
 	public void setNome(String nome) {
 		this.nome = nome;
@@ -37,4 +38,12 @@ public class Material {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+    public Aula getAula() {
+        return aula;
+    }
+
+    public void setAula(Aula aula) {
+        this.aula = aula;
+    }
 }

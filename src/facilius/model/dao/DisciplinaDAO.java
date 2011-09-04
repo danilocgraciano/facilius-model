@@ -1,132 +1,94 @@
 package facilius.model.dao;
 
+import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
 import facilius.model.pojo.Disciplina;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 
 public class DisciplinaDAO implements BaseDAO<Disciplina> {
 
-	private String path = "C:\\Disciplina.xml";
+    @Override
+    public void create(Disciplina e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into disciplina(nome,descricao,cursoid) values(?,?,?)");
+        ps.setString(1, e.getNome());
+        ps.setString(2, e.getDescricao());
+        ps.setLong(3, e.getCurso().getId());
+        ps.execute();
+        ps.close();
+    }
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<Disciplina>());
-		}
-		return conteudo;
-	}
+    @Override
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from disciplina where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-	private void saveToFile(Long sequence, List<Disciplina> data) throws Exception {
+    @Override
+    public List<Disciplina> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
+        String sentence = "select * from disciplina where true";
+        List<Disciplina> resultados = new ArrayList<Disciplina>();
+        if (criteria != null) {
+            String nome = (String) criteria.get("nome");
+            if (nome != null && !nome.trim().isEmpty()) {
+                sentence += " and nome ilike \'%" + nome + "%\'";
+            }
+            nome = (String) criteria.get("descricao");
+            if (nome != null && !nome.trim().isEmpty()) {
+                sentence += " and descricao ilike \'%" + nome + "%\'";
+            }
+        }
+        Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                resultados.add(this.extract(resultSet));
+            }
+        }
+        return resultados;
+    }
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+    @Override
+    public Disciplina readById(Long id) throws Exception {
+        Disciplina disciplina = null;
+        String sentence = "select * from disciplina where id = ?";
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                disciplina = this.extract(resultSet);
+            }
+        }
+        return disciplina;
+    }
 
-		XMLPersist.saveToFile(conteudo, path);
+    @Override
+    public void update(Disciplina e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update disciplina set nome = ?, descricao = ?, cursoid = ? where id = ?");
+        ps.setString(1, e.getNome());
+        ps.setString(2, e.getDescricao());
+        ps.setLong(3, e.getCurso().getId());
+        ps.setLong(4, e.getId());
+        ps.execute();
+        ps.close();
+    }
 
-	}
-	
-	@Override
-	public void create(Disciplina e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Disciplina> data = (List<Disciplina>) conteudo.get("data");
-
-		e.setId(++sequence);
-		data.add(e);
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Disciplina> data = (List<Disciplina>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Disciplina Disciplina = data.get(i);
-			if (Disciplina != null) {
-				if (Disciplina.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public List<Disciplina> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<Disciplina> resultados = new ArrayList<Disciplina>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Disciplina> data = (List<Disciplina>) conteudo.get("data");
-		for (int i = 0; i < data.size(); i++) {
-
-			Disciplina aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (criteria != null) {
-				String nome = (String) criteria.get("nome");
-				if (nome != null && !aux.getNome().startsWith(nome)) {
-					ok = false;
-				}
-			}
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
-
-	@Override
-	public Disciplina readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Disciplina> data = (List<Disciplina>) conteudo.get("data");
-
-		Disciplina DisciplinaAux = null;
-
-		for (int i = 0; i < data.size(); i++) {
-			Disciplina Disciplina = data.get(i);
-			if (Disciplina != null) {
-				if (Disciplina.getId().equals(id)) {
-					DisciplinaAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return DisciplinaAux;
-	}
-
-	@Override
-	public void update(Disciplina e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Disciplina> data = (List<Disciplina>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Disciplina Disciplina = data.get(i);
-			if (Disciplina != null) {
-				if (Disciplina.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
+    public Disciplina extract(ResultSet resultSet) throws Exception {
+        Disciplina disciplina = new Disciplina();
+        disciplina.setId(resultSet.getLong("id"));
+        disciplina.setCurso(ServiceLocator.getCursoService().readById(resultSet.getLong("cursoid")));
+        disciplina.setDescricao(resultSet.getString("descricao"));
+        disciplina.setNome(resultSet.getString("nome"));
+        return disciplina;
+    }
 }

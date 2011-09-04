@@ -1,135 +1,96 @@
 package facilius.model.dao;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ldsutils.XMLPersist;
 import facilius.model.base.BaseDAO;
+import facilius.model.ConnectionManager;
 import facilius.model.pojo.Aula;
+import java.sql.PreparedStatement;
 
 public class AulaDAO implements BaseDAO<Aula> {
 
-	private String path = "C:\\Aula.xml";
+    @Override
+    public void create(Aula e) throws Exception {
 
-	public Map<String, Object> loadFromFile(String path) {
-		Map<String, Object> conteudo = null;
-		try {
-			conteudo = (Map<String, Object>) XMLPersist.readFromFile(path);
-		} catch (Exception e1) {
-			conteudo = new HashMap<String, Object>();
-			conteudo.put("sequence", new Long(0));
-			conteudo.put("data", new ArrayList<Aula>());
-		}
-		return conteudo;
-	}
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into aula(titulo,descricao,data) values(?,?,?)");
+        ps.setString(1, e.getTitulo());
+        ps.setString(2, e.getDescricao());
+        ps.setDate(3, new java.sql.Date(e.getData().getTime()));
+        ps.execute();
+        ps.close();
 
-	private void saveToFile(Long sequence, List<Aula> data) throws Exception {
+    }
 
-		Map<String, Object> conteudo = new HashMap<String, Object>();
-		conteudo.put("sequence", sequence);
-		conteudo.put("data", data);
+    @Override
+    public void delete(Long id) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("delete from aula where id = ?");
+        ps.setLong(1, id);
+        ps.execute();
+        ps.close();
+    }
 
-		XMLPersist.saveToFile(conteudo, path);
+    @Override
+    public List<Aula> readByCriteria(Map<String, Object> criteria)
+            throws Exception {
 
-	}
+        List<Aula> resultados = new ArrayList<Aula>();
+        String sentence = "select * from aula where true ";
 
-	@Override
-	public void create(Aula e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Aula> data = (List<Aula>) conteudo.get("data");
+        if (criteria != null) {
+            String nome = (String) criteria.get("nome");
+            if (nome != null && !nome.trim().isEmpty()) {
+                sentence += " and titulo ilike '%" + nome + "%'";
+            }
+        }
 
-		e.setId(++sequence);
-		data.add(e);
+        java.sql.Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
+        ResultSet resultSet = stmt.executeQuery(sentence);
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                Aula aula = this.extract(resultSet);
+                resultados.add(aula);
+            }
+        }
+        return resultados;
+    }
 
-		saveToFile(sequence, data);
+    @Override
+    public Aula readById(Long id) throws Exception {
+        Aula aulaAux = null;
 
-		// TODO Auto-generated method stub
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("select * from aula where id = ?");
+        ps.setLong(1, id);
+        ResultSet resultSet = ps.executeQuery();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                aulaAux = this.extract(resultSet);
+            }
+        }
+        return aulaAux;
+    }
 
-	}
+    @Override
+    public void update(Aula e) throws Exception {
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update aula set titulo = ?, descricao = ?, data = ? where id = ? ");
+        ps.setString(1, e.getTitulo());
+        ps.setString(2, e.getDescricao());
+        ps.setDate(3, new java.sql.Date(e.getData().getTime()));
+        ps.setLong(4, e.getId());
+        ps.execute();
+        ps.close();
 
-	@Override
-	public void delete(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Aula> data = (List<Aula>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Aula Aula = data.get(i);
-			if (Aula != null) {
-				if (Aula.getId().equals(id)) {
-					data.remove(i);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
-	@Override
-	public List<Aula> readByCriteria(Map<String, Object> criteria)
-			throws Exception {
-		List<Aula> resultados = new ArrayList<Aula>();
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Aula> data = (List<Aula>) conteudo.get("data");
-		for (int i = 0; i < data.size(); i++) {
-
-			Aula aux = data.get(i);
-			boolean ok = true;
-			// Aplicar critérios...
-			if (criteria != null) {
-				String nome = (String) criteria.get("nome");
-				if (nome != null && !aux.getDescricao().startsWith(nome)) {
-					ok = false;
-				}
-			}
-			if (ok) {
-				resultados.add(aux);
-			}
-		}
-		return resultados;
-	}
-
-	@Override
-	public Aula readById(Long id) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		List<Aula> data = (List<Aula>) conteudo.get("data");
-
-		Aula AulaAux = null;
-
-		for (int i = 0; i < data.size(); i++) {
-			Aula Aula = data.get(i);
-			if (Aula != null) {
-				if (Aula.getId().equals(id)) {
-					AulaAux = data.get(i);
-					break;
-				}
-			}
-		}
-		return AulaAux;
-	}
-
-	@Override
-	public void update(Aula e) throws Exception {
-		Map<String, Object> conteudo = loadFromFile(path);
-		Long sequence = (Long) conteudo.get("sequence");
-		List<Aula> data = (List<Aula>) conteudo.get("data");
-
-		for (int i = 0; i < data.size(); i++) {
-			Aula Aula = data.get(i);
-			if (Aula != null) {
-				if (Aula.getId().equals(e.getId())) {
-					data.remove(i);
-					data.add(e);
-					break;
-				}
-			}
-		}
-
-		saveToFile(sequence, data);
-	}
-
+    }
+    
+    @Override
+    public Aula extract(ResultSet resultSet) throws Exception {
+        Aula aula = new Aula();
+        aula.setId(resultSet.getLong("id"));
+        aula.setData(resultSet.getDate("data"));
+        aula.setDescricao(resultSet.getString("descricao"));
+        aula.setTitulo(resultSet.getString("titulo"));
+        return aula;
+    }
 }
