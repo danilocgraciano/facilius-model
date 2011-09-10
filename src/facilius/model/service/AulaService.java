@@ -6,6 +6,7 @@ import java.util.Map;
 import facilius.model.base.BaseService;
 import facilius.model.dao.AulaDAO;
 import facilius.model.pojo.Aula;
+import java.util.TreeMap;
 
 public class AulaService implements BaseService<Aula> {
 
@@ -39,5 +40,15 @@ public class AulaService implements BaseService<Aula> {
 		AulaDAO dao = new AulaDAO();
 		dao.update(e);
 	}
+
+        public Map<String, String> getOptions(Map<String, Object> criteria) throws Exception {
+        Map<String, String> options = new TreeMap<String, String>();
+        List<Aula> aulas = this.readByCriteria(criteria);
+        for (int i = 0; i < aulas.size(); i++) {
+            Aula aux = aulas.get(i);
+            options.put(aux.getId().toString(), aux.getTitulo());
+        }
+        return options;
+    }
 
 }

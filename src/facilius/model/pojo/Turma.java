@@ -9,6 +9,7 @@ public class Turma {
 	private ArrayList<UsuarioCursoTurma> usuarioTurma;
 	private ArrayList<TurmaTipoNota> turmaTipoNota;
         private Disciplina disciplina;
+        private Usuario professor;
 
 	public void setId(Long id) {
 		this.id = id;
@@ -61,6 +62,14 @@ public class Turma {
 
     public void setDisciplina(Disciplina disciplina) {
         this.disciplina = disciplina;
+    }
+
+    public Usuario getProfessor() {
+        return professor;
+    }
+
+    public void setProfessor(Usuario professor) {
+        this.professor = professor;
     }
 
 
