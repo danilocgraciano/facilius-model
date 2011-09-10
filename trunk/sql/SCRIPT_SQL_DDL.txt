@@ -1,0 +1,165 @@
+CREATE TABLE usuario(
+    id serial not null,
+    login varchar(255) UNIQUE not null,
+    nome varchar(255) not null,
+    foto bytea,
+    senha varchar(255) not null,
+    email varchar(255) not null,
+    tipo integer not null,
+    primary key(id)
+);
+
+CREATE TABLE usuario_curso(
+    matricula serial not null,
+    cursoid serial not null,
+    usuarioid serial not null,
+    primary key(matricula)
+);
+
+CREATE TABLE curso(
+    id serial not null,
+    nome varchar(255) not null,
+    primary key(id)
+);
+
+CREATE TABLE usuario_curso_turma(
+    id serial not null,
+    usuario_cursomatricula serial not null,
+    turmaid serial not null,
+    primary key(id)
+);
+
+CREATE TABLE valor_nota(
+    id serial not null,
+    valor float not null,
+    tipo_notaid serial not null,
+    usuario_curso_turmaid serial,
+    primary key(id)
+);
+
+CREATE TABLE tipo_nota(
+    id serial not null,
+    oficial boolean not null,
+    descricao varchar(255) not null,
+    primary key(id)
+);
+
+CREATE TABLE turma(
+    id serial not null,
+    descricao varchar(255) not null,
+    ano integer not null,
+    disciplinaid serial not null,
+    professorid serial not null,
+    primary key(id)
+);
+
+CREATE TABLE frequencia(
+    id serial,
+    usuario_curso_turmaid serial not null,
+    aulaid serial not null,
+    status boolean not null,
+    primary key(id)
+);
+
+CREATE TABLE turma_tipo_nota(
+    turmaid serial not null,
+    tipo_notaid serial not null,
+    primary key(turmaid,tipo_notaid)
+);
+
+CREATE TABLE disciplina(
+    id serial not null,
+    nome varchar(255) not null,
+    descricao varchar(255) not null,
+    cursoid serial not null,
+    primary key(id)
+);
+
+CREATE TABLE material(
+    id serial not null,
+    nome varchar(255) not null,
+    descricao varchar(255) ,
+    arquivo bytea not null,
+    aulaid serial,
+    primary key(id)
+);
+
+CREATE TABLE aula(
+    id serial not null,
+    titulo varchar(255) not null,
+    descricao varchar(255) not null,
+    data date not null,
+    turmaid serial not null,
+    primary key(id)
+);
+
+CREATE TABLE instituicao(
+    id serial not null,
+    nome varchar(255) not null,
+    endereco varchar(255) not null,
+    bairro varchar(255) not null,
+    numero varchar(255) not null,
+    telefone1 varchar(20) not null,
+    telefone2 varchar(20),
+    cidadeid serial not null,
+    logo bytea,
+    email varchar(255),
+    primary key(id)
+);
+
+CREATE TABLE cidade(
+    id serial not null,
+    descricao varchar(255) not null,
+    uf varchar(255) not null,
+    primary key(id)
+);
+
+ALTER TABLE usuario_curso ADD CONSTRAINT cursoid_fk_RI 
+FOREIGN KEY (cursoid) REFERENCES curso(id);
+
+ALTER TABLE usuario_curso ADD CONSTRAINT usuarioid_fk_RI 
+FOREIGN KEY (usuarioid) REFERENCES usuario(id);
+
+ALTER TABLE usuario_curso_turma ADD CONSTRAINT usuario_cursomatricula_fk_RI 
+FOREIGN KEY (usuario_cursomatricula) REFERENCES usuario_curso(matricula);
+
+ALTER TABLE usuario_curso_turma ADD CONSTRAINT turmaid_fk_RI 
+FOREIGN KEY (turmaid) REFERENCES turma(id);
+
+ALTER TABLE valor_nota ADD CONSTRAINT tipo_notaid_fk_RI 
+FOREIGN KEY (tipo_notaid) REFERENCES tipo_nota(id);
+
+ALTER TABLE valor_nota ADD CONSTRAINT usuario_curso_turmaid_fk_RI 
+FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso_turma(id);
+
+ALTER TABLE frequencia ADD CONSTRAINT usuario_curso_turmaid_fk_RI_1 
+FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso_turma(id);
+
+ALTER TABLE frequencia ADD CONSTRAINT aulaid_fk_RI_1 
+FOREIGN KEY (aulaid) REFERENCES aula(id);
+
+ALTER TABLE turma_tipo_nota ADD CONSTRAINT turmaid_fk_RI
+FOREIGN KEY (turmaid) REFERENCES turma(id);
+
+ALTER TABLE turma_tipo_nota ADD CONSTRAINT tipo_notaid_fk_RI
+FOREIGN KEY (tipo_notaid) REFERENCES tipo_nota(id);
+
+ALTER TABLE disciplina ADD CONSTRAINT cursoid_fk_RI
+FOREIGN KEY (cursoid) REFERENCES curso(id);
+
+ALTER TABLE material ADD CONSTRAINT aulaid_fk_RI
+FOREIGN KEY (aulaid) REFERENCES aula(id);
+
+ALTER TABLE instituicao ADD CONSTRAINT cidadeid_fk_RI
+FOREIGN KEY (cidadeid) REFERENCES cidade(id);
+
+ALTER TABLE turma ADD CONSTRAINT disciplina_fk_RI
+FOREIGN KEY (disciplinaid) REFERENCES disciplina(id);
+
+ALTER TABLE turma ADD CONSTRAINT turma_professor_fk_RI
+FOREIGN KEY (professorid) REFERENCES usuario(id);
+
+ALTER TABLE aula ADD CONSTRAINT aula_turmaid_fk_RI
+FOREIGN KEY (turmaid) REFERENCES aula(id);
+
+INSERT INTO usuario(login,nome,senha,email,tipo) VALUES ('adm','Administrador','facilius','suporte@facilius.com.br',2)
