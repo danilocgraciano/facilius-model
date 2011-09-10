@@ -28,22 +28,38 @@ public class UsuarioCursoTurmaDAO implements BaseDAO<UsuarioCursoTurma> {
     public List<UsuarioCursoTurma> readByCriteria(Map<String, Object> criteria)
             throws Exception {
         List<UsuarioCursoTurma> resultados = new ArrayList<UsuarioCursoTurma>();
-        String sentence = "select * from usuario_curso_turma where true";
-        if (criteria != null) {
-            Object obj = criteria.get("turma");
-            Turma turma = null;
-            if (obj != null) {
-                turma = (Turma) obj;
+        String sentence = "select * from usuario_curso_turma";
+        Boolean options = (Boolean) criteria.get("options");
+        Long professorId = (Long) criteria.get("professor");
+        Long disciplinaId = (Long) criteria.get("disciplina");
+        Integer ano = (Integer) criteria.get("ano");
+        if ((options != null && options) && professorId != null && disciplinaId != null && ano != null){
+            sentence += " inner join turma on usuario_curso_turma.turmaid = turma.id and turma.professorid = " + professorId;
+            sentence += " and turma.disciplinaid = "+disciplinaId+" and turma.ano = " + ano;
+        }else{
+            sentence += " where true";
+            if (criteria != null) {
+                Object obj = criteria.get("turma");
+                Turma turma = null;
+                if (obj != null) {
+                    turma = (Turma) obj;
+                }
+
+                if (turma != null) {
+                    sentence += " and turmaid = '" + turma.getId() + "'";
+                }
+
+                UsuarioCurso usuarioCurso = (UsuarioCurso) criteria.get("usuarioCurso");
+                if (usuarioCurso != null) {
+                    sentence += " and usuario_cursomatricula = '" + usuarioCurso.getMatricula() + "'";
+                }
+
+                Long aulaId = (Long) criteria.get("aulaId");
+                if (aulaId != null){
+                    sentence += " and turmaid in (select turmaid from aula where id = '"+aulaId+"')";
+                }
             }
 
-            if (turma != null) {
-                sentence += " and turmaid = '" + turma.getId() + "'";
-            }
-
-            UsuarioCurso usuarioCurso = (UsuarioCurso) criteria.get("usuarioCurso");
-            if (usuarioCurso != null) {
-                sentence += " and usuario_cursomatricula = '" + usuarioCurso.getMatricula() + "'";
-            }
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);

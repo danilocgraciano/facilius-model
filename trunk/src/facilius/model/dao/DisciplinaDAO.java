@@ -35,17 +35,27 @@ public class DisciplinaDAO implements BaseDAO<Disciplina> {
     @Override
     public List<Disciplina> readByCriteria(Map<String, Object> criteria)
             throws Exception {
-        String sentence = "select * from disciplina where true";
+        String sentence = "select * from disciplina";
         List<Disciplina> resultados = new ArrayList<Disciplina>();
-        if (criteria != null) {
-            String nome = (String) criteria.get("nome");
-            if (nome != null && !nome.trim().isEmpty()) {
-                sentence += " and nome ilike \'%" + nome + "%\'";
+        
+        Boolean options = (Boolean) criteria.get("options");
+        Long professorId = (Long) criteria.get("professor");
+        Integer ano = (Integer) criteria.get("ano");
+        if ((options != null && options) && professorId != null && ano != null){
+            sentence += " left join turma on turma.disciplinaid = disciplina.id where turma.professorid = "+professorId+" and ano = " + ano;
+        }else{
+            sentence += " where true";
+            if (criteria != null) {
+                String nome = (String) criteria.get("nome");
+                if (nome != null && !nome.trim().isEmpty()) {
+                    sentence += " and nome ilike \'%" + nome + "%\'";
+                }
+                nome = (String) criteria.get("descricao");
+                if (nome != null && !nome.trim().isEmpty()) {
+                    sentence += " and descricao ilike \'%" + nome + "%\'";
+                }
             }
-            nome = (String) criteria.get("descricao");
-            if (nome != null && !nome.trim().isEmpty()) {
-                sentence += " and descricao ilike \'%" + nome + "%\'";
-            }
+            
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);

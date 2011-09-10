@@ -49,6 +49,14 @@ public class UsuarioDAO implements BaseDAO<Usuario> {
                 sentence += " and tipo = " + tipo + "";
 
             }
+            String usuario = (String) criteria.get("usuario");
+            if (usuario != null && !usuario.trim().isEmpty()){
+                sentence += " and login = '" + usuario + "'";
+            }
+            String senha = (String) criteria.get("senha");
+            if (senha != null && !senha.trim().isEmpty()){
+                sentence += " and senha = '" + senha + "'";
+            }
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);

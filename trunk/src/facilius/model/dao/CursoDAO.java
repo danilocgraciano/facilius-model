@@ -35,12 +35,20 @@ public class CursoDAO implements BaseDAO<Curso> {
 
         List<Curso> resultados = new ArrayList<Curso>();
         String sentence = "select * from curso where true";
-        if (criteria != null) {
-            String nome = (String) criteria.get("nome");
-            if (nome != null && !nome.trim().isEmpty()) {
-                sentence += " and nome ilike \'%" + nome + "%\'";
+        Boolean options = (Boolean)criteria.get("options");
+        Long usuarioId = (Long) criteria.get("usuarioId");
+        if ((options != null && options) && usuarioId != null){
+            sentence += " and curso.id not in(select usuario_curso.cursoid from usuario_curso left join curso on cursoid = curso.id where usuarioid = "+usuarioId+")";
+        }else{
+            if (criteria != null) {
+                String nome = (String) criteria.get("nome");
+                if (nome != null && !nome.trim().isEmpty()) {
+                    sentence += " and nome ilike \'%" + nome + "%\'";
+                }
             }
+
         }
+
 
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);
