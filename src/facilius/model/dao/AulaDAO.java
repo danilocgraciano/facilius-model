@@ -7,6 +7,7 @@ import java.util.Map;
 
 import facilius.model.base.BaseDAO;
 import facilius.model.ConnectionManager;
+import facilius.model.ServiceLocator;
 import facilius.model.pojo.Aula;
 import java.sql.PreparedStatement;
 
@@ -15,10 +16,11 @@ public class AulaDAO implements BaseDAO<Aula> {
     @Override
     public void create(Aula e) throws Exception {
 
-        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into aula(titulo,descricao,data) values(?,?,?)");
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into aula(titulo,descricao,data,turmaid) values(?,?,?,?)");
         ps.setString(1, e.getTitulo());
         ps.setString(2, e.getDescricao());
         ps.setDate(3, new java.sql.Date(e.getData().getTime()));
+        ps.setLong(4, e.getTurma().getId());
         ps.execute();
         ps.close();
 
@@ -43,6 +45,14 @@ public class AulaDAO implements BaseDAO<Aula> {
             String nome = (String) criteria.get("nome");
             if (nome != null && !nome.trim().isEmpty()) {
                 sentence += " and titulo ilike '%" + nome + "%'";
+            }
+            Long turma = (Long)criteria.get("turma");
+            if (turma != null){
+                sentence += " and turmaid = '" + turma + "'";
+            }
+            Long professor = (Long)criteria.get("professorid");
+            if (professor != null){
+                sentence += " and turmaid in (select id from turma where professorid = " + professor + ")";
             }
         }
 
@@ -74,11 +84,12 @@ public class AulaDAO implements BaseDAO<Aula> {
 
     @Override
     public void update(Aula e) throws Exception {
-        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update aula set titulo = ?, descricao = ?, data = ? where id = ? ");
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update aula set titulo = ?, descricao = ?, data = ?,turmaid = ? where id = ? ");
         ps.setString(1, e.getTitulo());
         ps.setString(2, e.getDescricao());
         ps.setDate(3, new java.sql.Date(e.getData().getTime()));
-        ps.setLong(4, e.getId());
+        ps.setLong(4, e.getTurma().getId());
+        ps.setLong(5, e.getId());
         ps.execute();
         ps.close();
 
@@ -91,6 +102,7 @@ public class AulaDAO implements BaseDAO<Aula> {
         aula.setData(resultSet.getDate("data"));
         aula.setDescricao(resultSet.getString("descricao"));
         aula.setTitulo(resultSet.getString("titulo"));
+        aula.setTurma(ServiceLocator.getTurmaService().readById(resultSet.getLong("turmaid")));
         return aula;
     }
 }
