@@ -8,6 +8,7 @@ public class Aula {
 	private String titulo;
 	private String descricao;
 	private Date data;
+        private Turma turma;
 	private ArrayList<Frequencia> turmaFrequencia;
 	private ArrayList<Material> materiais;
 
@@ -58,4 +59,19 @@ public class Aula {
 	public void setMateriais(ArrayList<Material> materiais) {
 		this.materiais = materiais;
 	}
+
+    public Turma getTurma() {
+        return turma;
+    }
+
+    public void setTurma(Turma turma) {
+        this.turma = turma;
+    }
+
+    @Override
+    public String toString() {
+        return getTitulo();
+    }
+
+
 }

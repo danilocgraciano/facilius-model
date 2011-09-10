@@ -5,15 +5,6 @@ public class Frequencia {
 	private UsuarioCursoTurma usuarioCursoTurma;
 	private Aula aula;
 	private boolean status;
-	private UsuarioCursoTurma turma;
-
-	public void setTurma(UsuarioCursoTurma turmas) {
-		this.turma = turmas;
-	}
-
-	public UsuarioCursoTurma getTurmas() {
-		return this.turma;
-	}
 
 	public void setUsuarioCursoTurma(UsuarioCursoTurma usuarioCursoTurma) {
 		this.usuarioCursoTurma = usuarioCursoTurma;
