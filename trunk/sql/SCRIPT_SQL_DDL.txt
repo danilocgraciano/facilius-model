@@ -162,4 +162,5 @@ FOREIGN KEY (professorid) REFERENCES usuario(id);
 ALTER TABLE aula ADD CONSTRAINT aula_turmaid_fk_RI
 FOREIGN KEY (turmaid) REFERENCES aula(id);
 
-INSERT INTO usuario(login,nome,senha,email,tipo) VALUES ('adm','Administrador','facilius','suporte@facilius.com.br',2)
+INSERT INTO usuario(login,nome,senha,email,tipo) VALUES ('adm','Administrador','facilius','suporte@facilius.com.br',2);
+INSERT INTO cidade(descricao,uf) VALUES('Santa Rita do Sapucaí','MG');
