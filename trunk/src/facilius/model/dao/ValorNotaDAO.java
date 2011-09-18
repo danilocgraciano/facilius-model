@@ -51,15 +51,10 @@ public class ValorNotaDAO implements BaseDAO<ValorNota> {
                 sentence += " and usuario_curso_turmaid = \'" + usuario.getId() + "\'";
             }
 
-//            obj = criteria.get("turma");
-//            Turma turma = null;
-//            if (obj != null) {
-//                turma = (Turma) obj;
-//            }
-//
-//            if (turma != null && !aux.getUsuarioCursoTurma().getTurma().getId().equals(turma.getId())) {
-//                ok = false;
-//            }
+            Long matricula = (Long) criteria.get("matricula");
+            if (matricula != null) {
+                sentence += " and usuario_curso_turmaid in (select id from usuario_curso_turma where usuario_cursomatricula = '" + matricula + "')";
+            }
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);

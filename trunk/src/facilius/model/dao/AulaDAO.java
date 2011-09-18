@@ -54,7 +54,18 @@ public class AulaDAO implements BaseDAO<Aula> {
             if (professor != null){
                 sentence += " and turmaid in (select id from turma where professorid = " + professor + ")";
             }
+
+            String semFrequencia = (String) criteria.get("sem");
+            if (semFrequencia != null && !semFrequencia.trim().isEmpty()){
+                sentence += " and id not in (select aulaid from frequencia)";
+            }
+
+            Long matricula = (Long) criteria.get("matricula");
+            if (matricula != null){
+                sentence += " and turmaid in (select turmaid from usuario_curso_turma where true and usuario_cursomatricula = "+matricula+") order by data";
+            }
         }
+
 
         java.sql.Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);

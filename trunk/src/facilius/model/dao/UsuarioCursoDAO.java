@@ -33,9 +33,17 @@ public class UsuarioCursoDAO implements BaseDAO<UsuarioCurso> {
             if (usuario != null) {
                 sentence += " and usuarioid = '" + usuario.getId() + "'";
             }
+            String usuarioId = (String) criteria.get("usuarioId");
+            if (usuarioId != null && !usuarioId.trim().isEmpty()) {
+                sentence += " and usuarioid = '" + usuarioId + "'";
+            }
             String matricula = (String)criteria.get("matricula");
             if (matricula != null && !matricula.trim().isEmpty()){
                 sentence += " and matricula = '" + matricula + "'";
+            }
+            Long cursoId = (Long) criteria.get("cursoId");
+            if (cursoId != null){
+                sentence += " and cursoid = '"+cursoId+"'";
             }
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();

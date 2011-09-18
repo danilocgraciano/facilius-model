@@ -2,16 +2,16 @@ package facilius.model.pojo;
 
 public class Frequencia {
 	private Long id;
-	private UsuarioCursoTurma usuarioCursoTurma;
+	private UsuarioCurso usuarioCurso;
 	private Aula aula;
 	private boolean status;
 
-	public void setUsuarioCursoTurma(UsuarioCursoTurma usuarioCursoTurma) {
-		this.usuarioCursoTurma = usuarioCursoTurma;
+	public void setUsuarioCurso(UsuarioCurso usuarioCurso) {
+		this.usuarioCurso = usuarioCurso;
 	}
 
-	public UsuarioCursoTurma getUsuarioCursoTurma() {
-		return this.usuarioCursoTurma;
+	public UsuarioCurso getUsuarioCurso() {
+		return this.usuarioCurso;
 	}
 
 	public void setAula(Aula aula) {
