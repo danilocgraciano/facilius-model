@@ -49,6 +49,7 @@ public class TurmaDAO implements BaseDAO<Turma> {
             if (professorId != null) {
                 sentence += " and professorid = '" + professorId + "'";
             }
+
         }
 
 

@@ -15,8 +15,8 @@ import java.sql.Statement;
 public class FrequenciaDAO implements BaseDAO<Frequencia> {
 
     public void create(Frequencia e) throws Exception {
-        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into frequencia values (?,?,?)");
-        ps.setLong(1, e.getUsuarioCursoTurma().getId());
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into frequencia(usuario_curso_turmaid,aulaid,status) values (?,?,?)");
+        ps.setLong(1, e.getUsuarioCurso().getMatricula());
         ps.setLong(2, e.getAula().getId());
         ps.setBoolean(3, e.isStatus());
         ps.execute();
@@ -54,7 +54,7 @@ public class FrequenciaDAO implements BaseDAO<Frequencia> {
 
     public void update(Frequencia e) throws Exception {
         PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update frequencia set usuario_curso_turmaid = ?, set aulaid = ?, set status = ? where id = ?");
-        ps.setLong(1, e.getUsuarioCursoTurma().getId());
+        ps.setLong(1, e.getUsuarioCurso().getMatricula());
         ps.setLong(2, e.getAula().getId());
         ps.setBoolean(3, e.isStatus());
         ps.setLong(4, e.getId());

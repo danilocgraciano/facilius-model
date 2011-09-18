@@ -28,6 +28,11 @@ public class TipoNotaDAO implements BaseDAO<TipoNota> {
             if (nome != null && !nome.trim().isEmpty()) {
                 sentence += " and descricao ilike \'%" + nome + "%\'";
             }
+
+            Long usuarioId = (Long) criteria.get("usuarioId");
+            if (usuarioId != null){
+                sentence += " and id not in (select tipo_notaid from valor_nota where usuario_curso_turmaid = "+usuarioId+")";
+            }
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);

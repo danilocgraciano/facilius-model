@@ -46,7 +46,7 @@ public class DisciplinaService implements BaseService<Disciplina> {
         List<Disciplina> disciplinas = this.readByCriteria(criteria);
         for (int i = 0; i < disciplinas.size(); i++) {
             Disciplina aux = disciplinas.get(i);
-            options.put(aux.getId().toString(), aux.getDescricao());
+            options.put(aux.getId().toString(), aux.getNome());
         }
         return options;
     }

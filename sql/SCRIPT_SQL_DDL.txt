@@ -132,8 +132,8 @@ FOREIGN KEY (tipo_notaid) REFERENCES tipo_nota(id);
 ALTER TABLE valor_nota ADD CONSTRAINT usuario_curso_turmaid_fk_RI 
 FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso_turma(id);
 
-ALTER TABLE frequencia ADD CONSTRAINT usuario_curso_turmaid_fk_RI_1 
-FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso_turma(id);
+ALTER TABLE frequencia ADD CONSTRAINT usuario_cursoid_fk_RI_1
+FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso(matricula);
 
 ALTER TABLE frequencia ADD CONSTRAINT aulaid_fk_RI_1 
 FOREIGN KEY (aulaid) REFERENCES aula(id);
