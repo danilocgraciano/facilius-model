@@ -47,7 +47,7 @@ public class TurmaService implements BaseService<Turma> {
         List<Turma> turmas = this.readByCriteria(criteria);
         for (int i = 0; i < turmas.size(); i++) {
             Turma aux = turmas.get(i);
-            options.put(aux.getId().toString(), aux.getDescricao());
+            options.put(aux.getId().toString(), aux.getDescricao() + " - " + aux.getAno());
         }
         return options;
     }

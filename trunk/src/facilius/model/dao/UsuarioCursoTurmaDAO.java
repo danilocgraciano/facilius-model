@@ -58,6 +58,7 @@ public class UsuarioCursoTurmaDAO implements BaseDAO<UsuarioCursoTurma> {
                 if (aulaId != null){
                     sentence += " and turmaid in (select turmaid from aula where id = '"+aulaId+"')";
                 }
+                
             }
 
         }
