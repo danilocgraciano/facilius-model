@@ -9,7 +9,9 @@ import facilius.model.base.BaseDAO;
 import facilius.model.ConnectionManager;
 import facilius.model.ServiceLocator;
 import facilius.model.pojo.Aula;
+import facilius.util.TrataData;
 import java.sql.PreparedStatement;
+import java.util.Date;
 
 public class AulaDAO implements BaseDAO<Aula> {
 
@@ -60,10 +62,29 @@ public class AulaDAO implements BaseDAO<Aula> {
                 sentence += " and id not in (select aulaid from frequencia)";
             }
 
+            Integer ano = (Integer) criteria.get("ano");
+            if (ano != null && ano > 0){
+                sentence += " and extract(year from data) = '"+ano+"'";
+            }
+
+            Date dataInicio = (Date) criteria.get("dataInicial");
+            if (dataInicio != null){
+                sentence += " and data >= '" + TrataData.dateToStringDB(dataInicio)+"'";
+            }
+
+            Date dataFim = (Date) criteria.get("dataFinal");
+            if (dataFim != null){
+                sentence += " and data <= '" + TrataData.dateToStringDB(dataFim)+"'";
+            }
+
+            //tem que ser a ultima opcao, por causa do order by
             Long matricula = (Long) criteria.get("matricula");
             if (matricula != null){
-                sentence += " and turmaid in (select turmaid from usuario_curso_turma where true and usuario_cursomatricula = "+matricula+") order by data";
+                sentence += " and turmaid in (select turmaid from usuario_curso_turma where true and usuario_cursomatricula = "+matricula+") order by data desc";
             }
+
+
+            
         }
 
 
@@ -110,7 +131,7 @@ public class AulaDAO implements BaseDAO<Aula> {
     public Aula extract(ResultSet resultSet) throws Exception {
         Aula aula = new Aula();
         aula.setId(resultSet.getLong("id"));
-        aula.setData(resultSet.getDate("data"));
+        aula.setData(new java.util.Date(resultSet.getTimestamp("data").getTime()));
         aula.setDescricao(resultSet.getString("descricao"));
         aula.setTitulo(resultSet.getString("titulo"));
         aula.setTurma(ServiceLocator.getTurmaService().readById(resultSet.getLong("turmaid")));

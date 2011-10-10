@@ -16,11 +16,11 @@ public class MaterialDAO implements BaseDAO<Material> {
 
     @Override
     public void create(Material e) throws Exception {
-        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into material values(?,?,?,?)");
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("insert into material(nome,descricao,aulaid) values(?,?,?)");
         ps.setString(1, e.getNome());
         ps.setString(2, e.getDescricao());
-        ps.setByte(3, e.getArquivo());
-        ps.setLong(4, e.getAula().getId());
+//        ps.setByte(3, nu);
+        ps.setLong(3, e.getAula().getId());
         ps.execute();
         ps.close();
     }
@@ -38,6 +38,12 @@ public class MaterialDAO implements BaseDAO<Material> {
             throws Exception {
         List<Material> resultados = new ArrayList<Material>();
         String sentence = "select * from material where true";
+        if (criteria != null){
+            Long aulaId = (Long) criteria.get("aulaId");
+            if (aulaId != null && aulaId > 0){
+                sentence += " and aulaid = '"+aulaId+"'";
+            }
+        }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);
         if (resultSet != null) {
@@ -54,7 +60,8 @@ public class MaterialDAO implements BaseDAO<Material> {
 
         String sentence = "select * from material where id = ?";
         PreparedStatement stmt = ConnectionManager.getInstance().getConnection().prepareStatement(sentence);
-        ResultSet resultSet = stmt.executeQuery(sentence);
+        stmt.setLong(1, id);
+        ResultSet resultSet = stmt.executeQuery();
         if (resultSet != null) {
             while (resultSet.next()) {
                 material = this.extract(resultSet);
@@ -65,18 +72,18 @@ public class MaterialDAO implements BaseDAO<Material> {
 
     @Override
     public void update(Material e) throws Exception {
-        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update material set nome = ?, set descricao = ?, set arquivo = ?, set aulaid = ? where id = ?");
-        ps.setString(1, e.getNome());
-        ps.setString(2, e.getDescricao());
-        ps.setByte(3, e.getArquivo());
-        ps.setLong(4, e.getAula().getId());
-        ps.execute();
-        ps.close();
+//        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update material set nome = ?, set aulaid = ? where id = ?");
+//        ps.setString(1, e.getNome());
+//        ps.setString(2, e.getDescricao());
+////        ps.setByte(3, e.getArquivo());
+//        ps.setLong(2, e.getAula().getId());
+//        ps.execute();
+//        ps.close();
     }
 
     public Material extract(ResultSet resultSet) throws Exception {
         Material material = new Material();
-        material.setArquivo(resultSet.getByte("arquivo"));
+//        material.setArquivo(resultSet.getByte("arquivo"));
         material.setAula(ServiceLocator.getAulaService().readById(resultSet.getLong("aulaid")));
         material.setDescricao(resultSet.getString("descricao"));
         material.setId(resultSet.getLong("id"));

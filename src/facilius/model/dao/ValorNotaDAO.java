@@ -55,6 +55,11 @@ public class ValorNotaDAO implements BaseDAO<ValorNota> {
             if (matricula != null) {
                 sentence += " and usuario_curso_turmaid in (select id from usuario_curso_turma where usuario_cursomatricula = '" + matricula + "')";
             }
+
+            Integer ano = (Integer) criteria.get("ano");
+            if(ano != null && ano > 0){
+                sentence += " and usuario_curso_turmaid in (select id from usuario_curso_turma where turmaid in (select id from turma where ano = '"+ano+"'))";
+            }
         }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);
