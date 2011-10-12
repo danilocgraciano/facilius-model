@@ -27,6 +27,19 @@ public class FrequenciaDAO implements BaseDAO<Frequencia> {
             throws Exception {
         List<Frequencia> resultados = new ArrayList<Frequencia>();
         String sentence = "select * from frequencia where true";
+        if (criteria != null){
+            Long aulaId = (Long) criteria.get("aulaId");
+            if (aulaId != null && aulaId > 0){
+                sentence += " and aulaid = '" + aulaId + "'";
+            }
+
+            Long matricula = (Long) criteria.get("matricula");
+            if (matricula != null && matricula > 0){
+                sentence += " and usuario_curso_turmaid = '" + matricula + "'";
+            }
+
+            sentence += " order by aulaid";
+        }
         Statement stmt = ConnectionManager.getInstance().getConnection().createStatement();
         ResultSet resultSet = stmt.executeQuery(sentence);
         if (resultSet != null) {
@@ -53,7 +66,7 @@ public class FrequenciaDAO implements BaseDAO<Frequencia> {
     }
 
     public void update(Frequencia e) throws Exception {
-        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update frequencia set usuario_curso_turmaid = ?, set aulaid = ?, set status = ? where id = ?");
+        PreparedStatement ps = ConnectionManager.getInstance().getConnection().prepareStatement("update frequencia set usuario_curso_turmaid = ?,  aulaid = ?, status = ? where id = ?");
         ps.setLong(1, e.getUsuarioCurso().getMatricula());
         ps.setLong(2, e.getAula().getId());
         ps.setBoolean(3, e.isStatus());
@@ -71,7 +84,8 @@ public class FrequenciaDAO implements BaseDAO<Frequencia> {
 
     public Frequencia extract(ResultSet resultSet) throws Exception {
         Frequencia freq = new Frequencia();
-        freq.setAula(ServiceLocator.getAulaService().readById(resultSet.getLong("usuario_curso_turmaid")));
+        freq.setAula(ServiceLocator.getAulaService().readById(resultSet.getLong("aulaid")));
+        freq.setUsuarioCurso(ServiceLocator.getUsuarioCursoService().readById(resultSet.getLong("usuario_curso_turmaid")));
         freq.setId(resultSet.getLong("id"));
         freq.setStatus(resultSet.getBoolean("status"));
         return freq;

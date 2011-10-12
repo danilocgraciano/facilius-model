@@ -1,7 +1,5 @@
 package facilius.model.pojo;
 
-import java.util.ArrayList;
-
 public class UsuarioCursoTurma {
 	private Long id;
 	private UsuarioCurso usuarioCurso;
