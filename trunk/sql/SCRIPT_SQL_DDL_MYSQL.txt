@@ -1,0 +1,171 @@
+CREATE TABLE usuario(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    login varchar(255) UNIQUE not null,
+    nome varchar(255) not null,
+    foto blob,
+    senha varchar(255) not null,
+    email varchar(255) not null,
+    tipo integer not null,
+    primary key(id)
+);
+
+CREATE TABLE usuario_curso(
+    matricula MEDIUMINT NOT NULL AUTO_INCREMENT,
+    cursoid MEDIUMINT NOT NULL,
+    usuarioid MEDIUMINT NOT NULL,
+    primary key(matricula)
+);
+
+CREATE TABLE curso(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    nome varchar(255) not null,
+    primary key(id)
+);
+
+CREATE TABLE usuario_curso_turma(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    usuario_cursomatricula MEDIUMINT NOT NULL,
+    turmaid MEDIUMINT NOT NULL,
+    primary key(id)
+);
+
+CREATE TABLE valor_nota(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    valor float not null,
+    tipo_notaid MEDIUMINT NOT NULL,
+    usuario_curso_turmaid MEDIUMINT NOT NULL,
+    primary key(id)
+);
+
+CREATE TABLE tipo_nota(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    oficial boolean not null,
+    descricao varchar(255) not null,
+    primary key(id)
+);
+
+CREATE TABLE turma(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    descricao varchar(255) not null,
+    ano integer not null,
+    disciplinaid MEDIUMINT NOT NULL,
+    professorid MEDIUMINT NOT NULL,
+    primary key(id)
+);
+
+CREATE TABLE frequencia(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    usuario_curso_turmaid MEDIUMINT NOT NULL,
+    aulaid MEDIUMINT NOT NULL,
+    status boolean not null,
+    primary key(id)
+);
+
+CREATE TABLE turma_tipo_nota(
+    turmaid MEDIUMINT NOT NULL AUTO_INCREMENT,
+    tipo_notaid MEDIUMINT NOT NULL,
+    primary key(turmaid,tipo_notaid)
+);
+
+CREATE TABLE disciplina(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    nome varchar(255) not null,
+    descricao varchar(255) not null,
+    cursoid MEDIUMINT NOT NULL,
+    primary key(id)
+);
+
+CREATE TABLE material(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    nome varchar(255) not null,
+    descricao varchar(255) ,
+    arquivo blob not null,
+    aulaid MEDIUMINT NOT NULL,
+    primary key(id)
+);
+
+CREATE TABLE aula(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    titulo varchar(255) not null,
+    descricao varchar(255) not null,
+    data date not null,
+    turmaid MEDIUMINT NOT NULL,
+    primary key(id)
+);
+
+CREATE TABLE instituicao(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    nome varchar(255) not null,
+    endereco varchar(255) not null,
+    bairro varchar(255) not null,
+    numero varchar(255) not null,
+    telefone1 varchar(20) not null,
+    telefone2 varchar(20),
+    cidadeid MEDIUMINT NOT NULL,
+    logo blob,
+    email varchar(255),
+    primary key(id)
+);
+
+CREATE TABLE cidade(
+    id MEDIUMINT NOT NULL AUTO_INCREMENT,
+    descricao varchar(255) not null,
+    uf varchar(255) not null,
+    primary key(id)
+);
+
+ALTER TABLE usuario_curso ADD CONSTRAINT cursoid_fk_RI 
+FOREIGN KEY (cursoid) REFERENCES curso(id);
+
+ALTER TABLE usuario_curso ADD CONSTRAINT usuarioid_fk_RI 
+FOREIGN KEY (usuarioid) REFERENCES usuario(id);
+
+ALTER TABLE usuario_curso_turma ADD CONSTRAINT usuario_cursomatricula_fk_RI 
+FOREIGN KEY (usuario_cursomatricula) REFERENCES usuario_curso(matricula);
+
+ALTER TABLE usuario_curso_turma ADD CONSTRAINT turmaid_fk_RI 
+FOREIGN KEY (turmaid) REFERENCES turma(id);
+
+ALTER TABLE valor_nota ADD CONSTRAINT tipo_notaid_fk_RI 
+FOREIGN KEY (tipo_notaid) REFERENCES tipo_nota(id);
+
+ALTER TABLE valor_nota ADD CONSTRAINT usuario_curso_turmaid_fk_RI 
+FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso_turma(id);
+
+ALTER TABLE frequencia ADD CONSTRAINT usuario_cursoid_fk_RI_1
+FOREIGN KEY (usuario_curso_turmaid) REFERENCES usuario_curso(matricula);
+
+ALTER TABLE frequencia ADD CONSTRAINT aulaid_fk_RI_1 
+FOREIGN KEY (aulaid) REFERENCES aula(id);
+
+ALTER TABLE turma_tipo_nota ADD CONSTRAINT turmaid_tipo_nota_fk_RI
+FOREIGN KEY (turmaid) REFERENCES turma(id);
+
+ALTER TABLE turma_tipo_nota ADD CONSTRAINT turma_tipo_notaid_fk_RI
+FOREIGN KEY (tipo_notaid) REFERENCES tipo_nota(id);
+
+ALTER TABLE disciplina ADD CONSTRAINT disciplina_cursoid_fk_RI
+FOREIGN KEY (cursoid) REFERENCES curso(id);
+
+ALTER TABLE material ADD CONSTRAINT material_aulaid_fk_RI
+FOREIGN KEY (aulaid) REFERENCES aula(id);
+
+ALTER TABLE instituicao ADD CONSTRAINT instituicao_cidadeid_fk_RI
+FOREIGN KEY (cidadeid) REFERENCES cidade(id);
+
+ALTER TABLE turma ADD CONSTRAINT turma_disciplina_fk_RI
+FOREIGN KEY (disciplinaid) REFERENCES disciplina(id);
+
+ALTER TABLE turma ADD CONSTRAINT turma_professor_fk_RI
+FOREIGN KEY (professorid) REFERENCES usuario(id);
+
+ALTER TABLE aula ADD CONSTRAINT aula_turmaid_fk_RI
+FOREIGN KEY (turmaid) REFERENCES turma(id);
+
+ALTER TABLE turma_tipo_nota ADD CONSTRAINT tipo_nota_turmaid_fk_RI 
+FOREIGN KEY (turmaid) REFERENCES turma(id);
+
+INSERT INTO usuario(login,nome,senha,email,tipo) VALUES ('adm','Administrador','facilius','suporte@facilius.com.br',2);
+INSERT INTO cidade(descricao,uf) VALUES('Santa Rita do Sapucaí','MG');
+
+
