@@ -1,0 +1,1 @@
+Camada model do projeto FACILIUS, desenvolvido para a FAITEC 2011.
